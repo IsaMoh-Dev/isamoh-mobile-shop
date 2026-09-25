@@ -10,10 +10,9 @@ node_modules/
 backend/.env
 frontend/.env
 
-# ── Frontend build output — rebuilt on deploy ──────────────────────
+# ── Frontend build output — included for deployment ───────────────
 dist/
 build/
-backend/public/client/
 .cache/
 
 # ── Uploaded user images — too large for git ──────────────────────
