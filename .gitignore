@@ -1,0 +1,37 @@
+# ── Dependencies — never commit these ─────────────────────────────
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# ── Environment variables — NEVER commit real credentials ──────────
+.env
+.env.local
+.env.production
+backend/.env
+frontend/.env
+
+# ── Frontend build output — rebuilt on deploy ──────────────────────
+dist/
+build/
+backend/public/client/
+.cache/
+
+# ── Uploaded user images — too large for git ──────────────────────
+backend/public/assets/products/
+backend/public/assets/blog/
+backend/public/assets/avatars/
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+
+# ── OS / Editor ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ── Misc ──────────────────────────────────────────────────────────
+*.tgz
+coverage/
