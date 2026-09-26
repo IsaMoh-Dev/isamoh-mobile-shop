@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useAuth }     from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { imgUrl }      from '../utils/imageUrl';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function ProfilePage() {
+  usePageTitle('My Profile');
   const { user, setUser } = useAuth();
   const { currency, switchCurrency } = useCurrency();
   const [tab, setTab] = useState('info');
@@ -97,7 +100,7 @@ export default function ProfilePage() {
               <div className="bg-white rounded-3 shadow-sm p-4 text-center mb-4">
                 <div className="position-relative d-inline-block mb-3">
                   {avatarSrc ? (
-                    <img src={avatarSrc} id="avatarPreview" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #00A5C4' }} alt="Avatar" />
+                    <img src={imgUrl(avatarSrc)} id="avatarPreview" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #00A5C4' }} alt="Avatar" />
                   ) : (
                     <div className="profile-avatar mx-auto">{initials}</div>
                   )}
@@ -117,7 +120,7 @@ export default function ProfilePage() {
               <div className="bg-white rounded-3 shadow-sm p-3">
                 <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, color: 'var(--primary)', marginBottom: 14 }}><i className="fas fa-chart-bar me-2" />Quick Links</h6>
                 <Link to="/orders" className="btn btn-outline-primary w-100 btn-sm mb-2"><i className="fas fa-box me-1" />View My Orders</Link>
-                <Link to="/cart" className="btn btn-outline-danger w-100 btn-sm"><i className="fas fa-heart me-1" />View Wishlist</Link>
+                <Link to="/wishlist" className="btn btn-outline-danger w-100 btn-sm"><i className="fas fa-heart me-1" />View Wishlist</Link>
               </div>
             </div>
 

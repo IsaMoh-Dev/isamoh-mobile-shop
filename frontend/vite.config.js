@@ -25,11 +25,11 @@ export default defineConfig({
     emptyOutDir:   true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor:  ['react', 'react-dom', 'react-router-dom'],
-          query:   ['@tanstack/react-query'],
-          charts:  ['chart.js', 'react-chartjs-2'],
-          swiper:  ['swiper'],
+        manualChunks: (id) => {
+          if (id.includes('node_modules/react/') || id.includes('react-dom') || id.includes('react-router-dom')) return 'vendor';
+          if (id.includes('@tanstack/react-query')) return 'query';
+          if (id.includes('chart.js') || id.includes('react-chartjs-2')) return 'charts';
+          if (id.includes('swiper')) return 'swiper';
         },
       },
     },

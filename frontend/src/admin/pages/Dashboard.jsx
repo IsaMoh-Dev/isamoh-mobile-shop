@@ -4,6 +4,7 @@ import { Bar, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend } from 'chart.js';
 import { useAuth }     from '../../context/AuthContext';
 import { useCurrency } from '../../context/CurrencyContext';
+import { imgUrl }      from '../../utils/imageUrl';
 import api from '../../api/axios';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend);
@@ -185,7 +186,16 @@ export default function Dashboard() {
           <tbody>
             {(stats?.recentOrders || []).length === 0 ? (
               <tr><td colSpan="6" className="text-center text-muted py-4">No orders yet.</td></tr>
-            ) : null}
+            ) : (stats?.recentOrders || []).map(o => (
+              <tr key={o._id}>
+                <td style={{ fontWeight:600, fontSize:13 }}>#{o._id.slice(-8).toUpperCase()}</td>
+                <td style={{ fontSize:13 }}>{o.fullName}</td>
+                <td className="text-danger fw-bold" style={{ fontSize:13 }}>{formatPrice(o.totalAmount)}</td>
+                <td style={{ fontSize:12, textTransform:'uppercase' }}>{o.paymentMethod}</td>
+                <td><span className={`badge bg-${o.status==='delivered'?'success':o.status==='cancelled'?'danger':o.status==='shipped'?'primary':o.status==='processing'?'info':'warning'}`}>{o.status}</span></td>
+                <td style={{ fontSize:12 }}>{new Date(o.orderDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

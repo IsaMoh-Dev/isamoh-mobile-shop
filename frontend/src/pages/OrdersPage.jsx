@@ -5,6 +5,7 @@ import { useCurrency } from '../context/CurrencyContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { imgUrl } from '../utils/imageUrl';
+import usePageTitle from '../hooks/usePageTitle';
 
 const STATUS_CONFIG = {
   pending:    { label:'Pending',    color:'#856404', bg:'#fff3cd', icon:'fa-clock',        step:0 },
@@ -16,6 +17,7 @@ const STATUS_CONFIG = {
 const STEPS = ['pending','processing','shipped','delivered'];
 
 export default function OrdersPage() {
+  usePageTitle('My Orders');
   const { formatPrice } = useCurrency();
   const [orders,  setOrders]  = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,83 +36,9 @@ export default function OrdersPage() {
   }
 
   function printInvoice(order) {
-    // FIX #11: Escape all user-controlled strings before inserting into HTML
-    const esc = str => String(str ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-
-    const rows = order.items.map(i =>
-      `<tr>
-        <td style="padding:8px;border:1px solid #ddd">${esc(i.itemName)}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:center">${esc(i.quantity)}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right">$${parseFloat(i.itemPrice).toFixed(2)}</td>
-        <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:700">$${(i.itemPrice * i.quantity).toFixed(2)}</td>
-      </tr>`
-    ).join('');
-
-    const html = `<!DOCTYPE html>
-<html>
-<head>
-  <title>Invoice</title>
-  <style>
-    body{font-family:Arial,sans-serif;padding:30px;max-width:700px;margin:0 auto}
-    table{width:100%;border-collapse:collapse;margin-top:16px}
-    th{background:#003859;color:#fff;padding:10px;text-align:left}
-    @media print{button{display:none}}
-  </style>
-</head>
-<body>
-  <div style="display:flex;justify-content:space-between;margin-bottom:30px">
-    <div>
-      <h1 style="color:#003859">Isa Moh Mobile Shop</h1>
-      <p style="color:#888;margin:0">Merkato, Samson Building, Addis Ababa</p>
-    </div>
-    <div style="text-align:right">
-      <h2 style="color:#003859;margin:0">INVOICE</h2>
-      <p style="margin:4px 0;font-size:14px">Order #${esc(order._id.slice(-8).toUpperCase())}</p>
-      <p style="margin:4px 0;font-size:13px;color:#888">${esc(new Date(order.orderDate).toLocaleDateString())}</p>
-    </div>
-  </div>
-  <hr>
-  <div style="display:flex;justify-content:space-between;margin-bottom:20px">
-    <div>
-      <strong>Bill To:</strong><br>
-      ${esc(order.fullName)}<br>
-      ${esc(order.email)}<br>
-      ${esc(order.phone)}<br>
-      ${esc(order.address)}, ${esc(order.city)}
-    </div>
-    <div style="text-align:right">
-      <strong>Payment:</strong><br>${esc(order.paymentMethod.toUpperCase())}<br>
-      <strong>Status:</strong><br>${esc(order.status.toUpperCase())}
-    </div>
-  </div>
-  <table>
-    <thead><tr>
-      <th>Product</th>
-      <th style="text-align:center">Qty</th>
-      <th style="text-align:right">Price</th>
-      <th style="text-align:right">Total</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr>
-      <td colspan="3" style="padding:10px;border:1px solid #ddd;text-align:right;font-weight:700">TOTAL</td>
-      <td style="padding:10px;border:1px solid #ddd;text-align:right;color:#dc3545;font-weight:700">$${order.totalAmount.toFixed(2)}</td>
-    </tr></tfoot>
-  </table>
-  <p style="margin-top:30px;font-size:12px;color:#888;text-align:center">Thank you for shopping with Isa Moh Mobile Shop!</p>
-  <div style="text-align:center;margin-top:10px">
-    <button onclick="window.print()" style="background:#003859;color:#fff;border:none;padding:10px 30px;border-radius:8px;cursor:pointer">🖨 Print Invoice</button>
-  </div>
-</body>
-</html>`;
-
-    const win = window.open('', '_blank');
-    win.document.write(html);
-    win.document.close();
+    const items = order.items.map(i => `<tr><td style="padding:8px;border:1px solid #ddd">${i.itemName}</td><td style="padding:8px;border:1px solid #ddd;text-align:center">${i.quantity}</td><td style="padding:8px;border:1px solid #ddd;text-align:right">$${i.itemPrice.toFixed(2)}</td><td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:700">$${(i.itemPrice*i.quantity).toFixed(2)}</td></tr>`).join('');
+    const html = `<!DOCTYPE html><html><head><title>Invoice</title><style>body{font-family:Arial,sans-serif;padding:30px;max-width:700px;margin:0 auto}table{width:100%;border-collapse:collapse;margin-top:16px}th{background:#003859;color:#fff;padding:10px;text-align:left}@media print{button{display:none}}</style></head><body><div style="display:flex;justify-content:space-between;margin-bottom:30px"><div><h1 style="color:#003859">Isa Moh Mobile Shop</h1><p style="color:#888;margin:0">Merkato, Samson Building, Addis Ababa</p></div><div style="text-align:right"><h2 style="color:#003859;margin:0">INVOICE</h2><p style="margin:4px 0;font-size:14px">Order #${order._id.slice(-8).toUpperCase()}</p><p style="margin:4px 0;font-size:13px;color:#888">${new Date(order.orderDate).toLocaleDateString()}</p></div></div><hr><div style="display:flex;justify-content:space-between;margin-bottom:20px"><div><strong>Bill To:</strong><br>${order.fullName}<br>${order.email}<br>${order.phone}<br>${order.address}, ${order.city}</div><div style="text-align:right"><strong>Payment:</strong><br>${order.paymentMethod.toUpperCase()}<br><strong>Status:</strong><br>${order.status.toUpperCase()}</div></div><table><thead><tr><th>Product</th><th style="text-align:center">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th></tr></thead><tbody>${items}</tbody><tfoot><tr><td colspan="3" style="padding:10px;border:1px solid #ddd;text-align:right;font-weight:700">TOTAL</td><td style="padding:10px;border:1px solid #ddd;text-align:right;color:#dc3545;font-weight:700">$${order.totalAmount.toFixed(2)}</td></tr></tfoot></table><p style="margin-top:30px;font-size:12px;color:#888;text-align:center">Thank you for shopping with Isa Moh Mobile Shop!</p><div style="text-align:center;margin-top:10px"><button onclick="window.print()" style="background:#003859;color:#fff;border:none;padding:10px 30px;border-radius:8px;cursor:pointer">🖨 Print Invoice</button></div></body></html>`;
+    const win = window.open('', '_blank'); win.document.write(html); win.document.close();
   }
 
   const counts = { total: orders.length, delivered: 0, inProgress: 0 };

@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth } from '../context/AuthContext';
+import { fillGrid } from '../utils/fillGrid';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { imgUrl } from '../utils/imageUrl';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function ProductPage() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
   const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   const [data,       setData]       = useState(null);
   const [loading,    setLoading]    = useState(true);
@@ -24,14 +27,21 @@ export default function ProductPage() {
   const [submitting, setSubmitting] = useState(false);
   const [inCart,     setInCart]     = useState(false);
 
+  // Set page title once product data loads
+  const productName = data?.product?.name || '';
+  const productBrand = data?.product?.brand || '';
+  usePageTitle(productName ? `${productBrand} ${productName}` : '');
+
   useEffect(() => {
     setLoading(true);
-    // FIX #12: Store raw image path, not the resolved URL — imgUrl() called once in render
     api.get(`/products/${id}`)
       .then(r => {
         setData(r.data);
-        setMainImg(r.data.product.image); // store raw path
-        if (r.data.userReview) setComment(r.data.userReview.comment);
+        setMainImg(imgUrl(r.data.product.image));
+        if (r.data.userReview) {
+          setComment(r.data.userReview.comment);
+          setRating(r.data.userReview.rating); // restore saved rating
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -46,7 +56,7 @@ export default function ProductPage() {
   async function handleBuyNow() {
     if (!isLoggedIn) { toast.error('Please login first.'); return; }
     await addToCart(id);
-    window.location.href = '/checkout';
+    navigate('/checkout');
   }
 
   async function submitReview(e) {
@@ -68,8 +78,7 @@ export default function ProductPage() {
 
   const { product, related, reviews, avgRating, userReview } = data;
   const discount = product.oldPrice > 0 ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) : 0;
-  // FIX #12: Keep raw paths in allImages — imgUrl() called at point of use in <img src>
-  const allImages = [product.image, product.image2, product.image3].filter(Boolean);
+  const allImages = [product.image, product.image2, product.image3].filter(Boolean).map(imgUrl);
 
   const specs = [
     product.processor && { icon: 'fas fa-microchip',   label: 'Processor', value: product.processor },
@@ -104,7 +113,7 @@ export default function ProductPage() {
                 {allImages.length > 1 && (
                   <div className="d-flex gap-2 justify-content-center mt-3 flex-wrap">
                     {allImages.map((img, i) => (
-                      <img key={i} src={imgUrl(img)} alt={`View ${i+1}`} onClick={() => setMainImg(img)}
+                      <img key={i} src={img} alt={`View ${i+1}`} onClick={() => setMainImg(img)}
                         style={{ width: 72, height: 72, objectFit: 'contain', borderRadius: 10, border: `2px solid ${mainImg === img ? '#00A5C4' : '#e0e0e0'}`, background: '#f8f9fa', padding: 6, cursor: 'pointer' }} />
                     ))}
                   </div>
@@ -205,7 +214,11 @@ export default function ProductPage() {
             <div className="mt-5">
               <h4 className="section-heading">Related Products</h4>
               <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
-                {related.map(r => <div key={r._id} className="col"><ProductCard product={r} /></div>)}
+                {fillGrid(related, 4).map(r => (
+                  <div key={r._fillerId || r._id} className="col">
+                    <ProductCard product={r} />
+                  </div>
+                ))}
               </div>
             </div>
           )}

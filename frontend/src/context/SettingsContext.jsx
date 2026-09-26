@@ -1,14 +1,15 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useCurrency } from './CurrencyContext';
 
 const SettingsContext = createContext({});
+const RefreshContext  = createContext(() => {});
 
 export default function SettingsProvider({ children }) {
   const [settings, setSettings] = useState({});
   const { updateRate } = useCurrency();
 
-  useEffect(() => {
+  const load = useCallback(() => {
     api.get('/settings')
       .then(res => {
         const s = res.data.settings || {};
@@ -19,13 +20,22 @@ export default function SettingsProvider({ children }) {
       .catch(() => {});
   }, [updateRate]);
 
+  useEffect(() => { load(); }, [load]);
+
   return (
-    <SettingsContext.Provider value={settings}>
-      {children}
-    </SettingsContext.Provider>
+    <RefreshContext.Provider value={load}>
+      <SettingsContext.Provider value={settings}>
+        {children}
+      </SettingsContext.Provider>
+    </RefreshContext.Provider>
   );
 }
 
 export function useSettings() {
   return useContext(SettingsContext);
+}
+
+/** Call this after mutating a setting to re-fetch and update all consumers. */
+export function useRefreshSettings() {
+  return useContext(RefreshContext);
 }

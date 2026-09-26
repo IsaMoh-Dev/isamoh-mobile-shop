@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import Layout      from '../components/Layout';
 import ProductCard from '../components/ProductCard';
+import { fillGrid } from '../utils/fillGrid';
 import api from '../api/axios';
 import { useCurrency } from '../context/CurrencyContext';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
@@ -12,6 +14,8 @@ export default function SearchPage() {
   const q        = params.get('q')        || '';
   const category = params.get('category') || '';
   const filter   = params.get('filter')   || '';
+
+  usePageTitle(q ? `Search: ${q}` : category ? category : filter ? `${filter.charAt(0).toUpperCase() + filter.slice(1)} Products` : 'All Products');
   const minPrice = params.get('minPrice') || '';
   const maxPrice = params.get('maxPrice') || '';
   const sort     = params.get('sort')     || '';
@@ -60,6 +64,7 @@ export default function SearchPage() {
     nav({ minPrice: minInput, maxPrice: maxInput, page: null });
   }
 
+  // XSS-safe heading — never use dangerouslySetInnerHTML with user input
   let heading = 'All Products';
   if (q)                  heading = `Search results for: "${q}"`;
   else if (category)      heading = `${category} Phones`;
@@ -103,7 +108,7 @@ export default function SearchPage() {
             <div className="col-12 col-md-9 col-lg-10">
               {/* Heading + sort */}
               <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <h5 className="section-heading mb-0" dangerouslySetInnerHTML={{ __html: heading }} />
+                <h5 className="section-heading mb-0">{heading}</h5>
                 <div className="d-flex align-items-center gap-2 flex-wrap">
                   <span className="text-muted" style={{ fontSize: 13 }}>{total} found</span>
                   <select className="form-select form-select-sm" style={{ width: 'auto', fontSize: 12 }} value={sort} onChange={e => nav({ sort: e.target.value, page: null })}>
@@ -142,7 +147,12 @@ export default function SearchPage() {
                 </div>
               ) : (
                 <div className="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
-                  {products.map(p => <div key={p._id} className="col"><ProductCard product={p} /></div>)}
+                  {/* Fill last row so no blank columns remain */}
+                  {fillGrid(products, 5).map(p => (
+                    <div key={p._fillerId || p._id} className="col">
+                      <ProductCard product={p} />
+                    </div>
+                  ))}
                 </div>
               )}
 

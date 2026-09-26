@@ -1,7 +1,9 @@
 import Layout from '../components/Layout';
 import { Link } from 'react-router-dom';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function AboutPage() {
+  usePageTitle('About Us');
   const stats = [['8+','Years in Business'],['50,000+','Happy Customers'],['500+','Phone Models'],['10+','Top Brands']];
   const features = [['fas fa-certificate','100% Original Products','All our products are genuine, sourced directly from authorized distributors.'],['fas fa-truck','Same-Day Delivery','Order before 2 PM and get your phone delivered the same day in Addis Ababa.'],['fas fa-headset','Expert Support','Our team is available to help you pick the right device for your needs and budget.'],['fas fa-shield-alt','1 Year Warranty','All smartphones come with a full 1-year manufacturer warranty.'],['fas fa-rotate-left','10-Day Returns','Not happy? Return within 10 days for a full refund or exchange.'],['fas fa-tag','Best Prices','We price-match and offer exclusive deals you won\'t find anywhere else.']];
   const brands = ['Samsung','Apple','Redmi','Huawei','Tecno','Infinix','Nokia','Oppo','Vivo','OnePlus'];
@@ -14,7 +16,7 @@ export default function AboutPage() {
           <div style={{ width: 72, height: 72, background: 'rgba(255,255,255,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 30 }}>
             <i className="fas fa-mobile-alt" />
           </div>
-          <h1 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 800, fontSize: 40, marginBottom: 12 }}>Isa &amp; Dagi Mobile Shop</h1>
+          <h1 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 800, fontSize: 40, marginBottom: 12 }}>Isa Moh Mobile Shop</h1>
           <p style={{ fontSize: 18, opacity: 0.85, maxWidth: 600, margin: '0 auto 24px' }}>Your trusted destination for the latest smartphones and accessories in Addis Ababa's Merkato district.</p>
           <div className="d-flex gap-3 justify-content-center flex-wrap">
             <Link to="/search" className="btn btn-light px-5 py-2 fw-bold" style={{ color: '#003859', borderRadius: 8, fontSize: 15 }}><i className="fas fa-shopping-bag me-2" />Shop Now</Link>
@@ -45,7 +47,7 @@ export default function AboutPage() {
           <div className="row g-5 align-items-center">
             <div className="col-lg-6">
               <h2 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 16 }}>Our Story</h2>
-              <p style={{ fontSize: 16, lineHeight: 1.8, color: '#444', marginBottom: 16 }}>Isa &amp; Dagi Mobile Shop was founded with one goal: to bring the latest smartphones and accessories to the people of Addis Ababa at the best prices.</p>
+              <p style={{ fontSize: 16, lineHeight: 1.8, color: '#444', marginBottom: 16 }}>Isa Moh Mobile Shop was founded with one goal: to bring the latest smartphones and accessories to the people of Addis Ababa at the best prices.</p>
               <p style={{ fontSize: 16, lineHeight: 1.8, color: '#444', marginBottom: 16 }}>Located in the heart of Merkato at Samson Building, we serve thousands of customers every month — from first-time smartphone buyers to tech enthusiasts looking for the latest flagship.</p>
               <p style={{ fontSize: 16, lineHeight: 1.8, color: '#444', marginBottom: 24 }}>We carry all major brands including Samsung, Apple, Redmi, Tecno, Infinix, and more — all 100% original with full warranty.</p>
               <div className="d-flex gap-3 flex-wrap">

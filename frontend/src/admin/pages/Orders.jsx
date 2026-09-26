@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCurrency } from '../../context/CurrencyContext';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
@@ -48,7 +48,7 @@ export default function AdminOrders() {
               {orders.length === 0 ? (
                 <tr><td colSpan="8" className="text-center text-muted py-4">No orders found.</td></tr>
               ) : orders.map(o => (
-                <>
+                <React.Fragment key={o._id}>
                   <tr key={o._id} style={{ cursor:'pointer' }} onClick={() => setExpanded(expanded === o._id ? null : o._id)}>
                     <td style={{ fontWeight:600 }}>#{o._id.slice(-8).toUpperCase()}</td>
                     <td>
@@ -105,7 +105,7 @@ export default function AdminOrders() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

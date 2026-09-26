@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import { useSettings }   from './context/SettingsContext';
 import SettingsProvider  from './context/SettingsContext';
 
 // Public pages
@@ -19,7 +18,8 @@ import PrivacyPage      from './pages/PrivacyPage';
 import TermsPage        from './pages/TermsPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage  from './pages/ResetPasswordPage';
-import NotFoundPage     from './pages/NotFoundPage';
+import WishlistPage       from './pages/WishlistPage';
+import NotFoundPage       from './pages/NotFoundPage';
 
 // Admin pages
 import AdminLayout      from './admin/AdminLayout';
@@ -63,6 +63,7 @@ function AppRoutes() {
         <Route path="/checkout"  element={<CheckoutPage />} />
         <Route path="/orders"    element={<OrdersPage />} />
         <Route path="/profile"   element={<ProfilePage />} />
+        <Route path="/wishlist"  element={<WishlistPage />} />
       </Route>
 
       {/* ── Admin ── */}

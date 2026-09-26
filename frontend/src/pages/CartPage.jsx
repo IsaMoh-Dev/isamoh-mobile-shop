@@ -4,27 +4,73 @@ import { useCart }     from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { useAuth }     from '../context/AuthContext';
 import { useState, useEffect } from 'react';
+import { fillGrid } from '../utils/fillGrid';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 import { imgUrl } from '../utils/imageUrl';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function CartPage() {
-  const { cart, cartTotal, updateQty, removeFromCart } = useCart();
+  usePageTitle('Shopping Cart');
+  const { cart, cartTotal, updateQty, removeFromCart, fetchCart } = useCart();
   const { formatPrice, currency, switchCurrency } = useCurrency();
   const { isLoggedIn } = useAuth();
   const [wishlist, setWishlist] = useState([]);
+  const [movingToWish, setMovingToWish] = useState({}); // { [productId]: true }
 
   useEffect(() => {
     if (isLoggedIn) api.get('/wishlist').then(r => setWishlist(r.data.items || [])).catch(() => {});
   }, [isLoggedIn]);
 
+  async function moveToWishlist(productId, itemModel) {
+    // Capture item details BEFORE fetchCart clears it from cart state
+    const cartItem = (cart.items || []).find(i => i.product === productId);
+    setMovingToWish(prev => ({ ...prev, [productId]: true }));
+    try {
+      await api.post(`/cart/move-to-wishlist/${productId}`, { itemModel });
+      await fetchCart();
+      // Now add to local wishlist using the details captured above
+      if (cartItem) {
+        setWishlist(prev => {
+          if (prev.some(w => w._id === productId)) return prev;
+          return [...prev, {
+            _id:   cartItem.product,
+            name:  cartItem.name,
+            brand: cartItem.brand,
+            price: cartItem.price,
+            image: cartItem.image,
+            stock: cartItem.stock,
+          }];
+        });
+      }
+      toast.success('Saved for later!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save for later.');
+    } finally {
+      setMovingToWish(prev => ({ ...prev, [productId]: false }));
+    }
+  }
+
   async function moveToCart(productId) {
-    await api.post(`/wishlist/move-to-cart/${productId}`);
-    const r = await api.get('/wishlist'); setWishlist(r.data.items || []);
+    try {
+      await api.post(`/wishlist/move-to-cart/${productId}`);
+      // Remove locally and refresh cart
+      setWishlist(prev => prev.filter(w => w._id !== productId));
+      await fetchCart();
+      toast.success('Moved to cart!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to move to cart.');
+    }
   }
 
   async function removeWish(productId) {
-    await api.delete(`/wishlist/remove/${productId}`);
-    setWishlist(w => w.filter(i => i._id !== productId));
+    try {
+      await api.delete(`/wishlist/remove/${productId}`);
+      setWishlist(prev => prev.filter(w => w._id !== productId));
+      toast.success('Removed from wishlist.');
+    } catch {
+      toast.error('Failed to remove.');
+    }
   }
 
   const items = cart.items || [];
@@ -62,33 +108,81 @@ export default function CartPage() {
               <div className="col-lg-8">
                 <div className="bg-white rounded-3 shadow-sm p-3">
                   {items.map(item => (
-                    <div key={item.product} className="cart-item d-flex gap-3 align-items-start">
-                      <Link to={`/product/${item.product}`} style={{ flexShrink: 0 }}>
-                        <img src={imgUrl(item.image)} alt={item.name} />
-                      </Link>
-                      <div className="flex-grow-1 min-width-0">
-                        <Link to={`/product/${item.product}`} className="text-dark text-decoration-none">
-                          <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{item.name}</h6>
+                    <div key={item.product} className="cart-item">
+                      {/* ── top row: image + details ── */}
+                      <div className="d-flex gap-3 align-items-start">
+                        <Link to={`/product/${item.product}`} style={{ flexShrink: 0 }}>
+                          <img src={imgUrl(item.image)} alt={item.name} />
                         </Link>
-                        {item.brand && <small className="text-muted">by {item.brand}</small>}
-                        <div className="text-muted mt-1" style={{ fontSize: 12 }}>Unit: <strong>{formatPrice(item.price)}</strong></div>
-                        <div className="d-flex align-items-center gap-2 mt-2 flex-wrap">
-                          <div className="d-flex align-items-center border rounded" style={{ overflow: 'hidden' }}>
-                            <button className="btn btn-sm btn-light border-0 px-2" onClick={() => updateQty(item.product, item.qty - 1, item.itemModel)}><i className="fas fa-minus" style={{ fontSize: 10 }} /></button>
-                            <span style={{ width: 46, textAlign: 'center', fontWeight: 600, fontSize: 13 }}>{item.qty}</span>
-                            <button className="btn btn-sm btn-light border-0 px-2" onClick={() => updateQty(item.product, item.qty + 1, item.itemModel)}><i className="fas fa-plus" style={{ fontSize: 10 }} /></button>
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <Link to={`/product/${item.product}`} className="text-dark text-decoration-none">
+                            <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{item.name}</h6>
+                          </Link>
+                          {item.brand && <small className="text-muted">by {item.brand}</small>}
+                          <div className="text-muted mt-1" style={{ fontSize: 12 }}>Unit: <strong>{formatPrice(item.price)}</strong></div>
+
+                          {/* ── controls row ── */}
+                          <div className="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                            {/* Qty stepper — bigger touch targets */}
+                            <div className="d-flex align-items-center border rounded overflow-hidden">
+                              <button
+                                className="btn btn-sm btn-light border-0"
+                                style={{ width: 44, height: 44, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                onClick={() => updateQty(item.product, item.qty - 1, item.itemModel)}
+                                aria-label="Decrease quantity"
+                              >
+                                <i className="fas fa-minus" />
+                              </button>
+                              <span style={{ width: 44, textAlign: 'center', fontWeight: 700, fontSize: 15, lineHeight: '44px' }}>{item.qty}</span>
+                              <button
+                                className="btn btn-sm btn-light border-0"
+                                style={{ width: 44, height: 44, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                onClick={() => updateQty(item.product, item.qty + 1, item.itemModel)}
+                                aria-label="Increase quantity"
+                              >
+                                <i className="fas fa-plus" />
+                              </button>
+                            </div>
+
+                            {/* Remove */}
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              style={{ minWidth: 44, minHeight: 44 }}
+                              onClick={() => removeFromCart(item.product, item.itemModel)}
+                              aria-label="Remove item"
+                            >
+                              <i className="fas fa-trash" />
+                            </button>
+
+                            {/* Save for Later */}
+                            {item.itemModel !== 'Accessory' && (
+                              <button
+                                className="btn btn-sm btn-outline-secondary"
+                                style={{ fontSize: 12, minHeight: 44 }}
+                                disabled={movingToWish[item.product]}
+                                onClick={() => moveToWishlist(item.product, item.itemModel)}
+                                title="Save for later"
+                              >
+                                {movingToWish[item.product]
+                                  ? <><span className="spinner-border spinner-border-sm me-1" style={{ width: 10, height: 10 }} />Saving...</>
+                                  : <><i className="fas fa-heart me-1 text-danger" /><span className="d-none d-sm-inline">Save for Later</span><span className="d-inline d-sm-none">Save</span></>
+                                }
+                              </button>
+                            )}
                           </div>
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => removeFromCart(item.product, item.itemModel)}><i className="fas fa-trash" /></button>
                         </div>
-                      </div>
-                      <div className="text-end" style={{ minWidth: 80, flexShrink: 0 }}>
-                        <span className="text-danger fw-bold" style={{ fontSize: 15 }}>{formatPrice(item.price * item.qty)}</span>
+
+                        {/* Price — right side */}
+                        <div className="text-end" style={{ minWidth: 72, flexShrink: 0 }}>
+                          <span className="text-danger fw-bold" style={{ fontSize: 15 }}>{formatPrice(item.price * item.qty)}</span>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
+              {/* ── Order summary ── */}
               <div className="col-lg-4">
                 <div className="cart-subtotal-box">
                   <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859' }}>Order Summary</h6>
@@ -106,8 +200,12 @@ export default function CartPage() {
                   </div>
                   <p className="text-success" style={{ fontSize: 12 }}><i className="fas fa-check-circle me-1" />FREE delivery on all orders</p>
                   <p style={{ fontSize: 12, color: '#555', marginBottom: 10 }}><i className="fas fa-tag me-1 text-warning" />Got a promo code? Apply it at checkout.</p>
-                  <Link to="/checkout" className="btn btn-secondary-custom w-100 py-2"><i className="fas fa-lock me-2" />Proceed to Checkout</Link>
-                  <Link to="/search" className="btn btn-outline-secondary w-100 mt-2" style={{ fontSize: 13 }}>Continue Shopping</Link>
+                  <Link to="/checkout" className="btn btn-secondary-custom w-100 py-3" style={{ fontSize: 16, minHeight: 52 }}>
+                    <i className="fas fa-lock me-2" />Proceed to Checkout
+                  </Link>
+                  <Link to="/search" className="btn btn-outline-secondary w-100 mt-2" style={{ fontSize: 14, minHeight: 48 }}>
+                    Continue Shopping
+                  </Link>
                 </div>
               </div>
             </div>
@@ -122,8 +220,8 @@ export default function CartPage() {
               <div className="text-center py-4 bg-white rounded-3 shadow-sm"><i className="fas fa-heart fa-2x text-muted mb-2" /><p className="text-muted mb-0">Your wishlist is empty</p></div>
             ) : (
               <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
-                {wishlist.map(w => (
-                  <div key={w._id} className="col">
+                {fillGrid(wishlist, 5).map(w => (
+                  <div key={w._fillerId || w._id} className="col">
                     <div className="product-card">
                       <div className="card-img-wrap"><Link to={`/product/${w._id}`}><img src={imgUrl(w.image)} alt={w.name} /></Link></div>
                       <div className="card-body">

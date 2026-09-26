@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css'; import 'swiper/css/pagination'; import 'swiper/css/navigation';
-import Layout      from '../components/Layout';
+import Layout from '../components/Layout';
 import ProductCard from '../components/ProductCard';
 import { useSettings } from '../context/SettingsContext';
 import { imgUrl } from '../utils/imageUrl';
+import { fillGrid } from '../utils/fillGrid';
 import api from '../api/axios';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function HomePage() {
+  usePageTitle('Best Phones & Accessories in Addis Ababa');
   const settings = useSettings();
   const [saleProducts,     setSaleProducts]     = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -42,7 +45,8 @@ export default function HomePage() {
           <Swiper modules={[Autoplay, Pagination]} autoplay={{ delay: 3500 }} pagination={{ clickable: true }} loop style={{ lineHeight: 0 }}>
             {banners.map((b, i) => (
               <SwiperSlide key={i}>
-                <img src={imgUrl(b)} alt={`Banner ${i + 1}`} style={{ width: '100%', maxHeight: 420, objectFit: 'cover', display: 'block' }} />
+                {/* First banner is above the fold — load eagerly. Rest are lazy */}
+                <img src={imgUrl(b)} alt={`Banner ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} style={{ width: '100%', maxHeight: 420, objectFit: 'cover', display: 'block' }} />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -54,8 +58,8 @@ export default function HomePage() {
         <section id="top-sale" className="py-4">
           <div className="container-fluid px-4">
             <h2 className="section-heading"><i className="fas fa-fire me-2 text-danger" />Top Sale</h2>
-            <Swiper modules={[Navigation]} navigation loop spaceBetween={16}
-              breakpoints={{ 0:{slidesPerView:1}, 600:{slidesPerView:3}, 1000:{slidesPerView:5} }}>
+            <Swiper modules={[Navigation]} navigation loop spaceBetween={12}
+              breakpoints={{ 0:{slidesPerView:2}, 480:{slidesPerView:2}, 600:{slidesPerView:3}, 1000:{slidesPerView:5} }}>
               {fill(saleProducts).map((p, i) => (
                 <SwiperSlide key={`${p._id}-${i}`}><ProductCard product={p} /></SwiperSlide>
               ))}
@@ -73,8 +77,10 @@ export default function HomePage() {
               <Link to="/search?filter=onsale" className="btn btn-outline-danger btn-sm">View All <i className="fas fa-arrow-right ms-1" /></Link>
             </div>
             <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-6 g-3">
-              {saleProducts.slice(0, 12).map(p => (
-                <div className="col" key={p._id}><ProductCard product={p} /></div>
+              {fillGrid(saleProducts.slice(0, 12), 6).map(p => (
+                <div className="col" key={p._fillerId || p._id}>
+                  <ProductCard product={p} />
+                </div>
               ))}
             </div>
           </div>
@@ -89,7 +95,7 @@ export default function HomePage() {
               {adBanners.map((b, i) => (
                 <div key={i} className="col-md-6">
                   <Link to="/search?filter=onsale">
-                    <img src={imgUrl(b)} alt={`Ad ${i + 1}`} className="w-100 rounded-3" style={{ objectFit: 'cover', maxHeight: 160 }} />
+                    <img src={imgUrl(b)} alt={`Ad ${i + 1}`} loading="lazy" className="w-100 rounded-3" style={{ objectFit: 'cover', maxHeight: 160 }} />
                   </Link>
                 </div>
               ))}
@@ -106,8 +112,8 @@ export default function HomePage() {
               <h2 className="section-heading mb-0"><i className="fas fa-star me-2 text-warning" />Featured Phones</h2>
               <Link to="/search?filter=featured" className="btn btn-outline-primary btn-sm">View All <i className="fas fa-arrow-right ms-1" /></Link>
             </div>
-            <Swiper modules={[Pagination]} pagination={{ clickable: true }} loop spaceBetween={16}
-              breakpoints={{ 0:{slidesPerView:1}, 600:{slidesPerView:3}, 1000:{slidesPerView:4} }}>
+            <Swiper modules={[Pagination]} pagination={{ clickable: true }} loop spaceBetween={12}
+              breakpoints={{ 0:{slidesPerView:2}, 480:{slidesPerView:2}, 600:{slidesPerView:3}, 1000:{slidesPerView:4} }}>
               {fill(featuredProducts).map((p, i) => (
                 <SwiperSlide key={`${p._id}-${i}`}><ProductCard product={p} /></SwiperSlide>
               ))}
@@ -125,13 +131,13 @@ export default function HomePage() {
               <Link to="/blog" className="btn btn-outline-primary btn-sm">All Posts <i className="fas fa-arrow-right ms-1" /></Link>
             </div>
             <div className="row g-4">
-              {blogs.map(post => (
-                <div key={post._id} className="col-md-4">
+              {fillGrid(blogs, 3).map(post => (
+                <div key={post._fillerId || post._id} className="col-md-4">
                   <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100" style={{ transition: 'transform 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = ''}>
                     <div className="blog-card-img-wrap">
-                      <img src={imgUrl(post.image)} alt={post.title} />
+                      <img src={imgUrl(post.image)} alt={post.title} loading="lazy" />
                     </div>
                     <div className="p-3">
                       <p style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>

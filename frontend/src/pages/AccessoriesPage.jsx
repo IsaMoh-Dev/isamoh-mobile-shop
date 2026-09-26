@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import { useCurrency } from '../context/CurrencyContext';
 import { useCart }     from '../context/CartContext';
 import { useAuth }     from '../context/AuthContext';
+import { fillGrid }    from '../utils/fillGrid';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { imgUrl } from '../utils/imageUrl';
@@ -71,8 +72,14 @@ export default function AccessoriesPage() {
             </div>
           ) : (
             <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
-              {accessories.map(acc => (
-                <div key={acc._id} className="col">
+              {/* Fill last row: 5 cols on lg, cycle items so no blank space */}
+              {fillGrid(accessories, 5).map(acc => (
+                <div
+                  key={acc._fillerId || acc._id}
+                  className="col"
+                  style={acc._isFiller ? { opacity: 0.55, pointerEvents: 'none' } : undefined}
+                  aria-hidden={acc._isFiller ? 'true' : undefined}
+                >
                   <div className="product-card">
                     <div className="card-img-wrap">
                       {acc.onSale && <span className="badge-sale">SALE</span>}

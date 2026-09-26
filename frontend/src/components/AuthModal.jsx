@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
@@ -7,6 +8,8 @@ const STEP = { EMAIL: 'email', CREDS: 'creds', FORGOT: 'forgot' };
 
 export default function AuthModal({ show, onHide }) {
   const { login, register } = useAuth();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
   const [step,     setStep]     = useState(STEP.EMAIL);
   const [mode,     setMode]     = useState('login'); // 'login' | 'register'
@@ -43,8 +46,8 @@ export default function AuthModal({ show, onHide }) {
 
   function calcStrength(pw) {
     let s = 0;
-    if (pw.length >= 6)           s++;
-    if (pw.length >= 10)          s++;
+    if (pw.length >= 8)           s++;
+    if (pw.length >= 12)          s++;
     if (/[A-Z]/.test(pw))         s++;
     if (/[0-9]/.test(pw))         s++;
     if (/[^A-Za-z0-9]/.test(pw))  s++;
@@ -71,7 +74,13 @@ export default function AuthModal({ show, onHide }) {
     clearAlert(); setLoading(true);
     try {
       const r = await login(email.trim(), password);
-      if (r.success) { toast.success(r.message); onHide(); }
+      if (r.success) {
+        toast.success(r.message);
+        onHide();
+        // Redirect back to the page that required login (e.g. /admin)
+        const from = location.state?.from?.pathname;
+        if (from && from !== '/') navigate(from, { replace: true });
+      }
       else showAlert(r.message);
     } catch (err) { showAlert(err.response?.data?.message || 'Login failed.'); }
     finally { setLoading(false); }
@@ -79,7 +88,7 @@ export default function AuthModal({ show, onHide }) {
 
   async function handleRegister() {
     if (!firstName.trim())        { showAlert('First name is required.'); return; }
-    if (regPw.length < 6)         { showAlert('Password must be at least 6 characters.'); return; }
+    if (regPw.length < 8)         { showAlert('Password must be at least 8 characters.'); return; }
     if (regPw !== regPw2)         { showAlert('Passwords do not match.'); return; }
     if (!agreed)                  { showAlert('Please agree to the Terms of Service.'); return; }
     clearAlert(); setLoading(true);
@@ -181,7 +190,7 @@ export default function AuthModal({ show, onHide }) {
                   <input type="tel" className="auth-input" placeholder="Phone (e.g. +251 9XX XXX XXX)" value={phone} onChange={e => setPhone(e.target.value)} />
                 </div>
                 <div className="auth-input-group mb-2">
-                  <input type="password" className="auth-input" placeholder="Password (min 6 chars)" value={regPw} onChange={e => { setRegPw(e.target.value); calcStrength(e.target.value); }} />
+                  <input type="password" className="auth-input" placeholder="Password (min 8 chars)" value={regPw} onChange={e => { setRegPw(e.target.value); calcStrength(e.target.value); }} />
                 </div>
                 <div className="auth-input-group mb-3">
                   <input type="password" className="auth-input" placeholder="Confirm Password" value={regPw2} onChange={e => setRegPw2(e.target.value)} />

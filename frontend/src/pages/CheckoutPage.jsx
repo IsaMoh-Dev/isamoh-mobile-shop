@@ -7,6 +7,7 @@ import { useAuth }     from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 import { imgUrl } from '../utils/imageUrl';
+import usePageTitle from '../hooks/usePageTitle';
 
 const PAYMENTS = [
   { value: 'cod',      icon: 'fas fa-money-bill-wave', color: '#28a745', label: 'Cash on Delivery' },
@@ -16,7 +17,8 @@ const PAYMENTS = [
 ];
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, fetchCart, cartLoading } = useCart();
+  usePageTitle('Checkout');
+  const { cart, cartTotal, fetchCart } = useCart();
   const { formatPrice } = useCurrency();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -83,9 +85,6 @@ export default function CheckoutPage() {
       toast.error(err.response?.data?.message || 'Order failed. Please try again.');
     } finally { setPlacing(false); }
   }
-
-  // FIX #13: Don't redirect while cart is still loading — wait for data to arrive
-  if (cartLoading) return <Layout><div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}><div className="spinner-border text-primary" /></div></Layout>;
 
   if (items.length === 0 && !orderPlaced) {
     navigate('/cart'); return null;

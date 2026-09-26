@@ -21,23 +21,34 @@ export default function AdminLayout() {
   return (
     <div style={{ display: 'flex' }}>
       {/* Sidebar */}
-      <div className="admin-sidebar">
-        <div className="admin-logo"><i className="fas fa-mobile-alt me-2" />Isa &amp; Dagi Admin</div>
-        <nav className="mt-2">
+      <div className="admin-sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="admin-logo"><i className="fas fa-mobile-alt me-2" />Isa Moh Admin</div>
+
+        {/* Nav links — scrollable if many items */}
+        <nav className="mt-2" style={{ flex: 1, overflowY: 'auto' }}>
           {LINKS.map(([to, icon, label, exact]) => (
             <NavLink key={to} to={to} end={exact}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
               <i className={`${icon}`} /> {label}
             </NavLink>
           ))}
-          <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '12px 20px' }} />
-          <a className="nav-link" href="/" target="_blank"><i className="fas fa-external-link-alt" /> View Site</a>
-          <button className="nav-link border-0 bg-transparent w-100 text-start text-danger" onClick={async () => { await logout(); navigate('/'); }}>
+        </nav>
+
+        {/* Bottom section — always visible, never overlaps */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8 }}>
+          <a className="nav-link" href="/" target="_blank">
+            <i className="fas fa-external-link-alt" /> View Site
+          </a>
+          <button
+            className="nav-link border-0 bg-transparent w-100 text-start"
+            style={{ color: '#ff6b6b' }}
+            onClick={async () => { await logout(); navigate('/'); }}
+          >
             <i className="fas fa-sign-out-alt" /> Logout
           </button>
-        </nav>
-        <div style={{ padding: '20px', fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 'auto', position: 'absolute', bottom: 0 }}>
-          Logged in as <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{user?.firstName}</strong>
+          <div style={{ padding: '10px 20px 16px', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+            Logged in as <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{user?.firstName}</strong>
+          </div>
         </div>
       </div>
 

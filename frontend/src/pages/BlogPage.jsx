@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { fillGrid } from '../utils/fillGrid';
 import api from '../api/axios';
 import { imgUrl } from '../utils/imageUrl';
+import usePageTitle from '../hooks/usePageTitle';
 
 export default function BlogPage() {
+  usePageTitle('Blog');
   const [posts,   setPosts]   = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,13 +26,13 @@ export default function BlogPage() {
             <div className="text-center py-5 bg-white rounded-3 shadow-sm"><p className="text-muted">No blog posts yet.</p></div>
           ) : (
             <div className="row g-4">
-              {posts.map(post => (
-                <div key={post._id} className="col-md-4">
+              {fillGrid(posts, 3).map(post => (
+                <div key={post._fillerId || post._id} className="col-md-4">
                   <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100" style={{ transition: 'transform 0.2s' }}
                     onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'}
                     onMouseLeave={e=>e.currentTarget.style.transform=''}>
                     <div className="blog-card-img-wrap">
-                      <img src={imgUrl(post.image)} alt={post.title} />
+                      <img src={imgUrl(post.image)} alt={post.title} loading="lazy" />
                     </div>
                     <div className="p-4">
                       <p style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>

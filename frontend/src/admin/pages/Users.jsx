@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import { imgUrl } from '../../utils/imageUrl';
 
 const ROLES = ['customer','seller','admin','superadmin'];
 const ROLE_COLORS = { superadmin:'danger', admin:'danger', seller:'success', customer:'primary' };
@@ -46,7 +47,7 @@ export default function AdminUsers() {
                 <tr key={u._id}>
                   <td>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      {u.avatar ? <img src={u.avatar} style={{ width:32, height:32, borderRadius:'50%', objectFit:'cover' }} /> : (
+                      {u.avatar ? <img src={imgUrl(u.avatar)} style={{ width:32, height:32, borderRadius:'50%', objectFit:'cover' }} alt="avatar" /> : (
                         <div style={{ width:32, height:32, borderRadius:'50%', background:'linear-gradient(135deg,#003859,#00A5C4)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:12, fontWeight:700 }}>
                           {(u.firstName||'?')[0].toUpperCase()}
                         </div>

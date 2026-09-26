@@ -16,6 +16,13 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
+  // Listen for token expiry events from axios interceptor
+  useEffect(() => {
+    const handler = () => { setUser(null); };
+    window.addEventListener('auth:expired', handler);
+    return () => window.removeEventListener('auth:expired', handler);
+  }, []);
+
   const login = useCallback(async (email, password) => {
     const res = await api.post('/auth/login', { email, password });
     setUser(res.data.user);

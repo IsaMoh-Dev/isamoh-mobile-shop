@@ -9,7 +9,7 @@ export default function MaintenancePage() {
         <div style={{ fontSize:60, marginBottom:20 }}>🔧</div>
         <h1 style={{ fontFamily:"'Rubik',sans-serif", fontSize:28, marginBottom:12 }}>Under Maintenance</h1>
         <p style={{ fontSize:16, opacity:0.8, lineHeight:1.6 }}>{msg}</p>
-        <p style={{ fontSize:13, marginTop:20, opacity:0.6 }}>Isa &amp; Dagi Mobile Shop · Merkato, Addis Ababa</p>
+        <p style={{ fontSize:13, marginTop:20, opacity:0.6 }}>Isa Moh Mobile Shop · Merkato, Addis Ababa</p>
       </div>
     </div>
   );
