@@ -101,7 +101,7 @@ export default function Navbar() {
               </Link>
               {isLoggedIn ? (
                 <div className="dropdown">
-                  <a href="#" className="top-bar-link dropdown-toggle" data-bs-toggle="dropdown">
+                  <a href="#" className="top-bar-link dropdown-toggle" data-bs-toggle="dropdown" onClick={e => e.preventDefault()}>
                     <i className="fas fa-user-circle me-1" />
                     <span className="d-none d-sm-inline">{t('topbar.hi')} </span>
                     <strong>{user.firstName}</strong>
@@ -224,7 +224,7 @@ export default function Navbar() {
                 <Link className={`nav-link ${isActive('/')}`} to="/">{t('nav.home')}</Link>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{t('nav.brands')}</a>
+                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.brands')}</button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0">
                   {brands.map(b => (
                     <li key={b._id}>
@@ -238,7 +238,7 @@ export default function Navbar() {
                 </ul>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{t('nav.products')}</a>
+                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.products')}</button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0">
                   <li><Link className="dropdown-item" to="/search"><i className="fas fa-th me-2" />{t('nav.allProducts')}</Link></li>
                   <li><Link className="dropdown-item" to="/search?filter=onsale"><i className="fas fa-tag me-2 text-danger" />{t('nav.onSale')}</Link></li>
@@ -251,7 +251,7 @@ export default function Navbar() {
                 </Link>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{t('nav.accessories')}</a>
+                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.accessories')}</button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0">
                   <li><Link className="dropdown-item" to="/accessories?cat=Cases"><i className="fas fa-shield-alt me-2 text-primary" />{t('nav.cases')}</Link></li>
                   <li><Link className="dropdown-item" to="/accessories?cat=Chargers"><i className="fas fa-bolt me-2 text-warning" />{t('nav.chargers')}</Link></li>
@@ -265,7 +265,7 @@ export default function Navbar() {
                 <Link className={`nav-link ${isActive('/blog')}`} to="/blog">{t('nav.blog')}</Link>
               </li>
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{t('nav.more')}</a>
+                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.more')}</button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0">
                   <li><Link className="dropdown-item" to="/about"><i className="fas fa-store me-2 text-primary" />{t('nav.about')}</Link></li>
                   <li><Link className="dropdown-item" to="/support"><i className="fas fa-headset me-2 text-success" />{t('nav.support')}</Link></li>

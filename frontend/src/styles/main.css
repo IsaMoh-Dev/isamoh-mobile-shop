@@ -330,6 +330,7 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   padding: 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
   z-index: 1000;
+  overflow: visible;
   transition: background 0.25s;
 }
 [data-theme="dark"] #main-nav { background: #111120; box-shadow: 0 2px 12px rgba(0,0,0,0.5); }
@@ -338,7 +339,8 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 #main-nav > .container-fluid {
   flex-wrap: nowrap !important;
   align-items: center;
-  padding: 0 12px;
+  padding: 0 16px;
+  overflow: visible;
 }
 
 /* Logo — fixed width, never shrinks */
@@ -382,22 +384,23 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     align-items: center;
     justify-content: space-between;
     flex: 1;
+    overflow: visible;
   }
   /* Search + nav links + right controls spread across the collapse */
   #main-nav .navbar-collapse > form.nav-search { flex-shrink: 0; }
   #main-nav .navbar-collapse > ul.navbar-nav   { flex: 1; justify-content: center; }
-  #main-nav .navbar-collapse > div.d-lg-flex   { flex-shrink: 0; }
+  #main-nav .navbar-collapse > div.d-lg-flex   { flex-shrink: 0; padding-right: 4px; }
 }
 @media (max-width: 991px) {
   /* Force the collapse to be a full-width block that pushes content down */
-  #main-nav { flex-wrap: wrap; }
+  #main-nav { flex-wrap: wrap; overflow: visible; }
   #main-nav .navbar-collapse {
     background: var(--primary);
     border-top: 1px solid rgba(255,255,255,0.1);
     padding: 4px 0 16px;
     width: 100%;
     flex-basis: 100%;
-    /* Override any Bootstrap absolute positioning */
+    overflow: visible;
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -1015,7 +1018,6 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     border-radius: 0 0 12px 12px;
     max-height: 85vh;
     overflow-y: auto;
-    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
   #main-nav .navbar-collapse .nav-link {
