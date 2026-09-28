@@ -160,7 +160,7 @@
    BASE
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-padding-top: 72px; transition: background 0.25s, color 0.25s; overflow-x: hidden; }
+html { scroll-padding-top: 72px; transition: background 0.25s, color 0.25s; }
 body {
   font-family: 'Raleway', sans-serif;
   color:      var(--text-body);
@@ -168,9 +168,9 @@ body {
   margin: 0;
   transition: background 0.25s, color 0.25s;
 }
-/* Clip horizontal overflow on the page content, NOT on body/html
-   so the sticky navbar is never clipped */
-#main-site, #footer { overflow-x: hidden; }
+/* Clip horizontal overflow only on the page content area.
+   Never on html/body — that breaks sticky navbar positioning. */
+#main-site { overflow-x: hidden; }
 a { text-decoration: none; color: inherit; }
 a:hover { color: var(--secondary); }
 img { max-width: 100%; }
@@ -332,7 +332,6 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   padding: 8px 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
   z-index: 1000;
-  overflow: visible;
   transition: background 0.25s;
 }
 [data-theme="dark"] #main-nav { background: #111120; box-shadow: 0 2px 12px rgba(0,0,0,0.5); }
@@ -342,7 +341,6 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   flex-wrap: nowrap !important;
   align-items: center;
   padding: 0 16px;
-  overflow: visible;
 }
 
 /* Logo — fixed width, never shrinks */
@@ -386,23 +384,21 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     align-items: center;
     justify-content: space-between;
     flex: 1;
-    overflow: visible;
   }
   /* Search + nav links + right controls spread across the collapse */
   #main-nav .navbar-collapse > form.nav-search { flex-shrink: 0; }
   #main-nav .navbar-collapse > ul.navbar-nav   { flex: 1; justify-content: center; }
-  #main-nav .navbar-collapse > div.d-lg-flex   { flex-shrink: 0; padding-right: 4px; }
+  #main-nav .navbar-collapse > div.d-lg-flex   { flex-shrink: 0; }
 }
 @media (max-width: 991px) {
   /* Force the collapse to be a full-width block that pushes content down */
-  #main-nav { flex-wrap: wrap; overflow: visible; }
+  #main-nav { flex-wrap: wrap; }
   #main-nav .navbar-collapse {
     background: var(--primary);
     border-top: 1px solid rgba(255,255,255,0.1);
     padding: 4px 0 16px;
     width: 100%;
     flex-basis: 100%;
-    overflow: visible;
     position: relative !important;
     top: auto !important;
     left: auto !important;
@@ -431,10 +427,9 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   #main-nav .navbar-collapse .dropdown-toggle::after {
     border-top-color: rgba(255,255,255,0.7);
   }
-  /* Inline sub-dropdowns — no popup, slide down under parent */
+  /* Inline sub-dropdowns — flow under parent, no floating popup */
   #main-nav .navbar-collapse .dropdown-menu {
-    position: static;
-    display: none;
+    position: static !important;
     float: none;
     background: rgba(0,0,0,0.2);
     border: none;
@@ -442,15 +437,17 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     margin: 4px 8px 4px 20px;
     padding: 4px 0;
     box-shadow: none;
+    /* Let Bootstrap JS control show/hide — do NOT set display here */
   }
-  /* Bootstrap 5 JS adds .show — this makes the dropdown visible */
-  #main-nav .navbar-collapse .dropdown-menu.show { display: block; }
   [data-theme="dark"] #main-nav .navbar-collapse .dropdown-menu { background: rgba(255,255,255,0.05); }
   #main-nav .navbar-collapse .dropdown-menu .dropdown-item {
     color: rgba(255,255,255,0.85);
     font-size: 14px;
     padding: 10px 14px;
     border-radius: 4px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
   #main-nav .navbar-collapse .dropdown-menu .dropdown-item:hover {
     background: rgba(255,255,255,0.12);
@@ -459,6 +456,11 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   #main-nav .navbar-collapse .dropdown-menu hr {
     border-color: rgba(255,255,255,0.12);
     margin: 4px 8px;
+  }
+  /* button used as nav-link must behave like a block tap target */
+  #main-nav .navbar-collapse button.nav-link {
+    width: 100%;
+    text-align: left;
   }
   /* Mobile search input — white text on teal background */
   #main-nav .nav-search-input {
@@ -1018,9 +1020,6 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   /* ── Mobile nav menu improvements ── */
   #main-nav .navbar-collapse {
     border-radius: 0 0 12px 12px;
-    max-height: 85vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
   #main-nav .navbar-collapse .nav-link {
     padding: 12px 16px !important;

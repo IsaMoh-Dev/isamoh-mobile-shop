@@ -13,11 +13,8 @@ function applyTheme(theme) {
 export function ThemeProvider({ children }) {
   const [theme, setThemeState] = useState(() => {
     const saved = localStorage.getItem('theme');
-    // Respect OS preference on first visit if no saved value
-    if (!saved) {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return saved;
+    // Always default to light on first visit
+    return saved || 'light';
   });
 
   // Apply on mount and whenever theme changes
