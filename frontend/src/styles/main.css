@@ -160,15 +160,17 @@
    BASE
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-padding-top: 72px; transition: background 0.25s, color 0.25s; }
+html { scroll-padding-top: 72px; transition: background 0.25s, color 0.25s; overflow-x: hidden; }
 body {
   font-family: 'Raleway', sans-serif;
   color:      var(--text-body);
   background: var(--bg-page);
   margin: 0;
-  overflow-x: hidden;
   transition: background 0.25s, color 0.25s;
 }
+/* Clip horizontal overflow on the page content, NOT on body/html
+   so the sticky navbar is never clipped */
+#main-site, #footer { overflow-x: hidden; }
 a { text-decoration: none; color: inherit; }
 a:hover { color: var(--secondary); }
 img { max-width: 100%; }
@@ -1106,7 +1108,6 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 
   /* Misc */
   .theme-icon-label { display: none; }
-  body { overflow-x: hidden; }
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
