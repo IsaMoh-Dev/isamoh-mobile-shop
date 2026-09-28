@@ -166,6 +166,7 @@ body {
   color:      var(--text-body);
   background: var(--bg-page);
   margin: 0;
+  overflow-x: hidden;
   transition: background 0.25s, color 0.25s;
 }
 a { text-decoration: none; color: inherit; }
@@ -427,7 +428,8 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   }
   /* Inline sub-dropdowns — no popup, slide down under parent */
   #main-nav .navbar-collapse .dropdown-menu {
-    position: static !important;
+    position: static;
+    display: none;
     float: none;
     background: rgba(0,0,0,0.2);
     border: none;
@@ -436,6 +438,8 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     padding: 4px 0;
     box-shadow: none;
   }
+  /* Bootstrap 5 JS adds .show — this makes the dropdown visible */
+  #main-nav .navbar-collapse .dropdown-menu.show { display: block; }
   [data-theme="dark"] #main-nav .navbar-collapse .dropdown-menu { background: rgba(255,255,255,0.05); }
   #main-nav .navbar-collapse .dropdown-menu .dropdown-item {
     color: rgba(255,255,255,0.85);
@@ -962,6 +966,19 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   /* Admin table: horizontal scroll */
   .admin-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .admin-table table { min-width: 600px; }
+
+  /* Swiper arrows — keep inside container at tablet width */
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after { font-size: 14px !important; color: #fff; }
+  .swiper-button-prev { left: 4px !important; }
+  .swiper-button-next { right: 4px !important; }
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -1203,3 +1220,4 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   background: var(--bg-surface);
   color: var(--text-body);
 }
+
