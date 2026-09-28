@@ -347,13 +347,10 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 .nav-logo { font-family:'Rubik',sans-serif; font-size:22px; font-weight:700; color:#fff !important; }
 #main-nav .navbar-brand { padding: 4px 0; flex-shrink: 0; margin-right: 12px; }
 
-/* Desktop search — inside collapse, fills space between logo and nav links */
+/* Desktop search — inside collapse */
 .nav-search {
-  flex: 1;
-  max-width: 440px;
   position: relative;
   z-index: 1;
-  margin-right: 8px;
 }
 
 /* ── Mobile top row: logo | search (flex:1) | cart | ☰ ── */
@@ -382,13 +379,26 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   #main-nav .navbar-collapse {
     display: flex !important;
     align-items: center;
-    justify-content: space-between;
     flex: 1;
+    min-width: 0;
+    gap: 8px;
   }
-  /* Search + nav links + right controls spread across the collapse */
-  #main-nav .navbar-collapse > form.nav-search { flex-shrink: 0; }
-  #main-nav .navbar-collapse > ul.navbar-nav   { flex: 1; justify-content: center; }
-  #main-nav .navbar-collapse > div.d-lg-flex   { flex-shrink: 0; }
+  /* Search — fixed comfortable width, does not grow */
+  #main-nav .navbar-collapse > form.nav-search {
+    flex: 0 0 260px;
+    max-width: 260px;
+  }
+  /* Nav links — take remaining space, centered */
+  #main-nav .navbar-collapse > ul.navbar-nav {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+  }
+  /* Right controls (theme + lang + cart) — never shrink, always fully visible */
+  #main-nav .navbar-collapse > div.d-lg-flex {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
 }
 @media (max-width: 991px) {
   /* Force the collapse to be a full-width block that pushes content down */
