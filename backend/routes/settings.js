@@ -6,8 +6,9 @@ const ContactMessage = require('../models/ContactMessage');
 const Newsletter     = require('../models/Newsletter');
 const { protect, adminAccess } = require('../middleware/auth');
 const upload  = require('../middleware/upload');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
-// GET /api/settings  — public (for frontend to read shop config)
+// GET /api/settings
 router.get('/', async (req, res) => {
   try {
     const settings = await Setting.find();
@@ -18,10 +19,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// PUT /api/settings  — admin: bulk update settings
+// PUT /api/settings — bulk update
 router.put('/', protect, adminAccess, async (req, res) => {
   try {
-    const updates = req.body; // { key: value, key: value, ... }
+    const updates = req.body;
     const ops = Object.entries(updates).map(([key, value]) => ({
       updateOne: {
         filter: { key },
@@ -36,26 +37,41 @@ router.put('/', protect, adminAccess, async (req, res) => {
   }
 });
 
-// POST /api/settings/banner  — admin: upload banner image
-router.post('/banner', protect, adminAccess, (req, res, next) => {
-  req.uploadFolder = ''; req.uploadPrefix = 'banner'; next();
-}, upload.single('banner'), async (req, res) => {
+// POST /api/settings/banner — upload banner or logo image to Cloudinary
+router.post('/banner', protect, adminAccess, upload.single('banner'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded.' });
-    const { bannerKey } = req.body; // e.g. 'banner_1'
-    const filePath = `assets/${req.file.filename}`;
+
+    const { bannerKey } = req.body;
+
+    // Delete old image from Cloudinary if it exists
     if (bannerKey) {
-      await Setting.findOneAndUpdate({ key: bannerKey }, { $set: { key: bannerKey, value: filePath } }, { upsert: true });
+      const existing = await Setting.findOne({ key: bannerKey });
+      if (existing?.value) await deleteFromCloudinary(existing.value);
     }
-    res.json({ success: true, path: filePath });
+
+    // Upload new image to Cloudinary
+    const folder = bannerKey === 'shop_logo' ? 'isamoh/logos' : 'isamoh/banners';
+    const imageUrl = await uploadToCloudinary(req.file.buffer, folder);
+
+    // Save URL to settings
+    if (bannerKey) {
+      await Setting.findOneAndUpdate(
+        { key: bannerKey },
+        { $set: { key: bannerKey, value: imageUrl } },
+        { upsert: true }
+      );
+    }
+
+    res.json({ success: true, path: imageUrl });
   } catch (e) {
-    res.status(500).json({ success: false, message: 'Upload failed.' });
+    console.error('[Banner upload]', e);
+    res.status(500).json({ success: false, message: 'Upload failed: ' + e.message });
   }
 });
 
 // ── Brands ──────────────────────────────────────────────────────────────────
 
-// GET /api/settings/brands
 router.get('/brands', async (req, res) => {
   try {
     const brands = await Brand.find().sort({ name: 1 });
@@ -123,7 +139,6 @@ router.post('/newsletter', async (req, res) => {
     }
     const exists = await Newsletter.findOne({ email: email.toLowerCase() });
     if (exists) return res.status(409).json({ success: false, message: 'You are already subscribed!' });
-
     await Newsletter.create({ email: email.toLowerCase() });
     res.json({ success: true, message: 'Subscribed! You will receive our latest deals.' });
   } catch (e) {
@@ -140,7 +155,7 @@ router.get('/newsletter', protect, adminAccess, async (req, res) => {
   }
 });
 
-// POST /api/settings/contact  — public contact form
+// POST /api/settings/contact — public contact form
 router.post('/contact', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;

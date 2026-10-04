@@ -1,8 +1,9 @@
-const express = require('express');
-const router  = express.Router();
+const express   = require('express');
+const router    = express.Router();
 const Accessory = require('../models/Accessory');
 const { protect, adminAccess } = require('../middleware/auth');
-const upload = require('../middleware/upload');
+const upload    = require('../middleware/upload');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 // GET /api/accessories
 router.get('/', async (req, res) => {
@@ -10,7 +11,7 @@ router.get('/', async (req, res) => {
     const { cat, q, sort } = req.query;
     const query = {};
     if (cat) query.category = { $regex: `^${cat}$`, $options: 'i' };
-    if (q)   query.name = { $regex: q, $options: 'i' };
+    if (q)   query.name = { $regex: q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' };
 
     let sortObj = { createdAt: -1 };
     if (sort === 'price_asc')  sortObj = { price: 1 };
@@ -46,17 +47,17 @@ router.get('/:id', async (req, res) => {
 });
 
 // ADMIN: POST /api/accessories
-router.post('/', protect, adminAccess, (req, res, next) => {
-  req.uploadFolder = 'products'; req.uploadPrefix = 'acc'; next();
-}, upload.single('image'), async (req, res) => {
+router.post('/', protect, adminAccess, upload.single('image'), async (req, res) => {
   try {
     const data = { ...req.body };
-    if (req.file) data.image = `assets/products/${req.file.filename}`;
+    if (req.file) {
+      data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/accessories');
+    }
     data.featured = data.featured === 'true';
     data.onSale   = data.onSale   === 'true';
-    data.price    = parseFloat(data.price) || 0;
+    data.price    = parseFloat(data.price)    || 0;
     data.oldPrice = parseFloat(data.oldPrice) || null;
-    data.stock    = parseInt(data.stock) || 0;
+    data.stock    = parseInt(data.stock)      || 0;
     const acc = await Accessory.create(data);
     res.status(201).json({ success: true, accessory: acc });
   } catch (e) {
@@ -65,12 +66,14 @@ router.post('/', protect, adminAccess, (req, res, next) => {
 });
 
 // ADMIN: PUT /api/accessories/:id
-router.put('/:id', protect, adminAccess, (req, res, next) => {
-  req.uploadFolder = 'products'; req.uploadPrefix = 'acc'; next();
-}, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, adminAccess, upload.single('image'), async (req, res) => {
   try {
     const data = { ...req.body };
-    if (req.file) data.image = `assets/products/${req.file.filename}`;
+    if (req.file) {
+      const existing = await Accessory.findById(req.params.id);
+      if (existing?.image) await deleteFromCloudinary(existing.image);
+      data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/accessories');
+    }
     data.featured = data.featured === 'true';
     data.onSale   = data.onSale   === 'true';
     if (data.price)    data.price    = parseFloat(data.price);
@@ -87,7 +90,9 @@ router.put('/:id', protect, adminAccess, (req, res, next) => {
 // ADMIN: DELETE /api/accessories/:id
 router.delete('/:id', protect, adminAccess, async (req, res) => {
   try {
-    await Accessory.findByIdAndDelete(req.params.id);
+    const acc = await Accessory.findByIdAndDelete(req.params.id);
+    if (!acc) return res.status(404).json({ success: false, message: 'Accessory not found.' });
+    await deleteFromCloudinary(acc.image);
     res.json({ success: true, message: 'Accessory deleted.' });
   } catch (e) {
     res.status(500).json({ success: false, message: 'Failed to delete accessory.' });

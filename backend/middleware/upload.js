@@ -1,25 +1,11 @@
 const multer = require('multer');
 const path   = require('path');
-const fs     = require('fs');
 
-// Store uploads in backend/public/assets — proper MERN structure
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let folder = 'products';
-    if (req.uploadFolder) folder = req.uploadFolder;
-    const dir = path.join(__dirname, '../public/assets', folder);
-    fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const prefix = req.uploadPrefix || 'upload';
-    const ext    = path.extname(file.originalname).toLowerCase();
-    cb(null, `${prefix}_${Date.now()}${ext}`);
-  },
-});
+// Use memory storage — files go to buffer, NOT disk
+// This works on Render (ephemeral filesystem) because we upload directly to Cloudinary
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  // FIX #7: Check both extension AND MIME type to prevent file type spoofing
   const allowedExts  = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
   const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   const ext  = path.extname(file.originalname).toLowerCase();

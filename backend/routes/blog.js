@@ -4,6 +4,7 @@ const Blog     = require('../models/Blog');
 const slugify  = require('slugify');
 const { protect, adminAccess } = require('../middleware/auth');
 const upload   = require('../middleware/upload');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 // GET /api/blog
 router.get('/', async (req, res) => {
@@ -32,14 +33,15 @@ router.get('/:slug', async (req, res) => {
 });
 
 // ADMIN: POST /api/blog
-router.post('/', protect, adminAccess, (req, res, next) => {
-  req.uploadFolder = 'blog'; req.uploadPrefix = 'blog'; next();
-}, upload.single('image'), async (req, res) => {
+router.post('/', protect, adminAccess, upload.single('image'), async (req, res) => {
   try {
     const { title, content } = req.body;
     const slug  = slugify(title, { lower: true, strict: true }) + '-' + Date.now();
-    const image = req.file ? `assets/blog/${req.file.filename}` : 'assets/blog/blog1.jpg';
-    const post  = await Blog.create({ title, content, slug, image });
+    let image = 'assets/blog/blog1.jpg'; // fallback to existing static image
+    if (req.file) {
+      image = await uploadToCloudinary(req.file.buffer, 'isamoh/blog');
+    }
+    const post = await Blog.create({ title, content, slug, image });
     res.status(201).json({ success: true, post });
   } catch (e) {
     res.status(500).json({ success: false, message: 'Failed to create post.' });
@@ -47,12 +49,14 @@ router.post('/', protect, adminAccess, (req, res, next) => {
 });
 
 // ADMIN: PUT /api/blog/:id
-router.put('/:id', protect, adminAccess, (req, res, next) => {
-  req.uploadFolder = 'blog'; req.uploadPrefix = 'blog'; next();
-}, upload.single('image'), async (req, res) => {
+router.put('/:id', protect, adminAccess, upload.single('image'), async (req, res) => {
   try {
     const data = { ...req.body };
-    if (req.file) data.image = `assets/blog/${req.file.filename}`;
+    if (req.file) {
+      const existing = await Blog.findById(req.params.id);
+      if (existing?.image) await deleteFromCloudinary(existing.image);
+      data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/blog');
+    }
     if (data.title) data.slug = slugify(data.title, { lower: true, strict: true }) + '-' + Date.now();
     const post = await Blog.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true });
     if (!post) return res.status(404).json({ success: false, message: 'Post not found.' });
@@ -65,7 +69,9 @@ router.put('/:id', protect, adminAccess, (req, res, next) => {
 // ADMIN: DELETE /api/blog/:id
 router.delete('/:id', protect, adminAccess, async (req, res) => {
   try {
-    await Blog.findByIdAndDelete(req.params.id);
+    const post = await Blog.findByIdAndDelete(req.params.id);
+    if (!post) return res.status(404).json({ success: false, message: 'Post not found.' });
+    await deleteFromCloudinary(post.image);
     res.json({ success: true, message: 'Post deleted.' });
   } catch (e) {
     res.status(500).json({ success: false, message: 'Failed to delete post.' });
