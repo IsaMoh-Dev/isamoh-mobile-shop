@@ -381,17 +381,18 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     align-items: center;
     flex: 1;
     min-width: 0;
-    gap: 8px;
+    gap: 4px;
   }
-  /* Search — fixed comfortable width, does not grow */
+  /* Search — sits right after the logo, fixed width */
   #main-nav .navbar-collapse > form.nav-search {
-    flex: 0 0 260px;
-    max-width: 260px;
+    flex: 0 0 220px;
+    max-width: 220px;
+    margin-right: 8px;
   }
-  /* Nav links — take remaining space, centered */
+  /* Nav links — fill remaining space, items spread evenly */
   #main-nav .navbar-collapse > ul.navbar-nav {
     flex: 1 1 auto;
-    justify-content: center;
+    justify-content: space-evenly;
     min-width: 0;
   }
   /* Right controls (theme + lang + cart) — never shrink, always fully visible */

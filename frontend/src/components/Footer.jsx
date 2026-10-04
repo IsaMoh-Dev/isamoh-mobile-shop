@@ -79,16 +79,25 @@ export default function Footer() {
             </div>
 
             {/* ── Customer Care ── */}
-            <div className="col-lg-2 col-6">
+            <div className="col-lg-2 col-12">
               <h5 className="footer-heading">{t('footer.customerService')}</h5>
-              <ul className="footer-links">
-                <li><Link to="/orders"><i className="fas fa-chevron-right me-1" />{t('user.myOrders')}</Link></li>
-                <li><Link to="/support#contact"><i className="fas fa-chevron-right me-1" />{t('nav.contact')}</Link></li>
-                <li><Link to="/support#faq"><i className="fas fa-chevron-right me-1" />{t('nav.faq')}</Link></li>
-                <li><Link to="/support"><i className="fas fa-chevron-right me-1" />{t('footer.returnPolicy')}</Link></li>
-                <li><Link to="/privacy"><i className="fas fa-chevron-right me-1" />{t('footer.privacy')}</Link></li>
-                <li><Link to="/terms"><i className="fas fa-chevron-right me-1" />{t('footer.terms')}</Link></li>
-              </ul>
+              {/* On mobile: 2 columns of 3 items each */}
+              <div className="row g-0">
+                <div className="col-6 col-lg-12">
+                  <ul className="footer-links">
+                    <li><Link to="/orders"><i className="fas fa-chevron-right me-1" />{t('user.myOrders')}</Link></li>
+                    <li><Link to="/support#contact"><i className="fas fa-chevron-right me-1" />{t('nav.contact')}</Link></li>
+                    <li><Link to="/support#faq"><i className="fas fa-chevron-right me-1" />{t('nav.faq')}</Link></li>
+                  </ul>
+                </div>
+                <div className="col-6 col-lg-12">
+                  <ul className="footer-links">
+                    <li><Link to="/support"><i className="fas fa-chevron-right me-1" />{t('footer.returnPolicy')}</Link></li>
+                    <li><Link to="/privacy"><i className="fas fa-chevron-right me-1" />{t('footer.privacy')}</Link></li>
+                    <li><Link to="/terms"><i className="fas fa-chevron-right me-1" />{t('footer.terms')}</Link></li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {/* ── Newsletter + Contact ── */}

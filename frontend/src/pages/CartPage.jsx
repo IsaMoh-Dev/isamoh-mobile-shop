@@ -114,7 +114,7 @@ export default function CartPage() {
                         <Link to={`/product/${item.product}`} style={{ flexShrink: 0 }}>
                           <img src={imgUrl(item.image)} alt={item.name} />
                         </Link>
-                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                        <div className="flex-grow-1" style={{ minWidth: 0, overflow: 'hidden' }}>
                           <Link to={`/product/${item.product}`} className="text-dark text-decoration-none">
                             <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{item.name}</h6>
                           </Link>
@@ -173,8 +173,8 @@ export default function CartPage() {
                         </div>
 
                         {/* Price — right side */}
-                        <div className="text-end" style={{ minWidth: 72, flexShrink: 0 }}>
-                          <span className="text-danger fw-bold" style={{ fontSize: 15 }}>{formatPrice(item.price * item.qty)}</span>
+                        <div className="text-end" style={{ minWidth: 60, flexShrink: 0, paddingLeft: 6 }}>
+                          <span className="text-danger fw-bold" style={{ fontSize: 14, whiteSpace: 'nowrap', display: 'block' }}>{formatPrice(item.price * item.qty)}</span>
                         </div>
                       </div>
                     </div>
