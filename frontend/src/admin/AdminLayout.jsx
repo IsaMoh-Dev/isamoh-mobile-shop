@@ -1,5 +1,32 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Component } from 'react';
+
+// Per-page error boundary — catches crashes in individual admin pages
+// without killing the entire admin layout
+class PageErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(e) { return { hasError: true, error: e }; }
+  componentDidCatch(e, info) { console.error('[AdminPage]', e, info.componentStack); }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return (
+      <div style={{ padding: 32, textAlign: 'center' }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
+        <h5 style={{ color: '#dc3545', marginBottom: 8 }}>This page encountered an error</h5>
+        <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
+          {this.state.error?.message || 'An unexpected error occurred.'}
+        </p>
+        <button
+          className="btn btn-primary"
+          onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
+        >
+          Reload Page
+        </button>
+      </div>
+    );
+  }
+}
 
 const LINKS = [
   ['/admin',             'fas fa-tachometer-alt', 'Dashboard',   true],
@@ -65,7 +92,9 @@ export default function AdminLayout() {
 
       {/* Content */}
       <div className="admin-content" style={{ flex: 1 }}>
-        <Outlet />
+        <PageErrorBoundary>
+          <Outlet />
+        </PageErrorBoundary>
       </div>
     </div>
   );

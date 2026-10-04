@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { Bar, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend } from 'chart.js';
 import { useAuth }     from '../../context/AuthContext';
 import { useCurrency } from '../../context/CurrencyContext';
 import { imgUrl }      from '../../utils/imageUrl';
 import api from '../../api/axios';
+
+// Lazy-load chart components — prevents canvas crash on mobile
+const Bar     = lazy(() => import('react-chartjs-2').then(m => ({ default: m.Bar })));
+const Doughnut = lazy(() => import('react-chartjs-2').then(m => ({ default: m.Doughnut })));
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend);
 
@@ -80,13 +83,21 @@ export default function Dashboard() {
               <h6 className="mb-0" style={{ fontFamily:"'Rubik',sans-serif", fontWeight:700, color:'#003859' }}><i className="fas fa-chart-line me-2 text-primary" />Revenue — Last 7 Days</h6>
               <span style={{ fontSize:12, color:'#888' }}>Total: <strong className="text-danger">{formatPrice((stats?.sevenDays||[]).reduce((s,d)=>s+d.revenue,0))}</strong></span>
             </div>
-            {stats && <Bar data={revenueChart} options={{ responsive:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v}},y2:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{stepSize:1}}}}} />}
+            {stats && (
+              <Suspense fallback={<div className="text-center py-3"><div className="spinner-border spinner-border-sm text-primary" /></div>}>
+                <Bar data={revenueChart} options={{ responsive:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v}},y2:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{stepSize:1}}}}} />
+              </Suspense>
+            )}
           </div>
         </div>
         <div className="col-lg-4">
           <div className="bg-white rounded-3 shadow-sm p-4">
             <h6 className="mb-3" style={{ fontFamily:"'Rubik',sans-serif", fontWeight:700, color:'#003859' }}><i className="fas fa-chart-pie me-2 text-info" />Order Status</h6>
-            {stats && <Doughnut data={donutChart} options={{ responsive:true, cutout:'65%', plugins:{legend:{display:false}}}} />}
+            {stats && (
+              <Suspense fallback={<div className="text-center py-3"><div className="spinner-border spinner-border-sm text-primary" /></div>}>
+                <Doughnut data={donutChart} options={{ responsive:true, cutout:'65%', plugins:{legend:{display:false}}}} />
+              </Suspense>
+            )}
             <div className="mt-3 d-flex flex-wrap gap-2 justify-content-center" style={{ fontSize:11 }}>
               {[['#ffc107','Pending'],['#17a2b8','Processing'],['#007bff','Shipped'],['#28a745','Delivered'],['#dc3545','Cancelled']].map(([color,label]) => (
                 <span key={label} style={{ display:'inline-flex', alignItems:'center', gap:4 }}>
