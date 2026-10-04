@@ -109,73 +109,70 @@ export default function CartPage() {
                 <div className="bg-white rounded-3 shadow-sm p-3">
                   {items.map(item => (
                     <div key={item.product} className="cart-item">
-                      {/* ── top row: image + details ── */}
+                      {/* ── Row 1: image + name/brand/price ── */}
                       <div className="d-flex gap-3 align-items-start">
+                        {/* Image — fixed size, never shrinks */}
                         <Link to={`/product/${item.product}`} style={{ flexShrink: 0 }}>
-                          <img src={imgUrl(item.image)} alt={item.name} />
+                          <img src={imgUrl(item.image)} alt={item.name}
+                            style={{ width: 80, height: 80, objectFit: 'contain', background: '#f8f9fa', borderRadius: 8, padding: 4 }} />
                         </Link>
-                        <div className="flex-grow-1" style={{ minWidth: 0, overflow: 'hidden' }}>
+
+                        {/* Middle: name + brand + unit price */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <Link to={`/product/${item.product}`} className="text-dark text-decoration-none">
-                            <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{item.name}</h6>
+                            <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 600, fontSize: 14, marginBottom: 2, lineHeight: 1.3 }}>{item.name}</h6>
                           </Link>
-                          {item.brand && <small className="text-muted">by {item.brand}</small>}
+                          {item.brand && <small className="text-muted d-block">by {item.brand}</small>}
                           <div className="text-muted mt-1" style={{ fontSize: 12 }}>Unit: <strong>{formatPrice(item.price)}</strong></div>
-
-                          {/* ── controls row ── */}
-                          <div className="d-flex align-items-center gap-2 mt-2 flex-wrap">
-                            {/* Qty stepper — bigger touch targets */}
-                            <div className="d-flex align-items-center border rounded overflow-hidden">
-                              <button
-                                className="btn btn-sm btn-light border-0"
-                                style={{ width: 44, height: 44, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                onClick={() => updateQty(item.product, item.qty - 1, item.itemModel)}
-                                aria-label="Decrease quantity"
-                              >
-                                <i className="fas fa-minus" />
-                              </button>
-                              <span style={{ width: 44, textAlign: 'center', fontWeight: 700, fontSize: 15, lineHeight: '44px' }}>{item.qty}</span>
-                              <button
-                                className="btn btn-sm btn-light border-0"
-                                style={{ width: 44, height: 44, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                onClick={() => updateQty(item.product, item.qty + 1, item.itemModel)}
-                                aria-label="Increase quantity"
-                              >
-                                <i className="fas fa-plus" />
-                              </button>
-                            </div>
-
-                            {/* Remove */}
-                            <button
-                              className="btn btn-sm btn-outline-danger"
-                              style={{ minWidth: 44, minHeight: 44 }}
-                              onClick={() => removeFromCart(item.product, item.itemModel)}
-                              aria-label="Remove item"
-                            >
-                              <i className="fas fa-trash" />
-                            </button>
-
-                            {/* Save for Later */}
-                            {item.itemModel !== 'Accessory' && (
-                              <button
-                                className="btn btn-sm btn-outline-secondary"
-                                style={{ fontSize: 12, minHeight: 44 }}
-                                disabled={movingToWish[item.product]}
-                                onClick={() => moveToWishlist(item.product, item.itemModel)}
-                                title="Save for later"
-                              >
-                                {movingToWish[item.product]
-                                  ? <><span className="spinner-border spinner-border-sm me-1" style={{ width: 10, height: 10 }} />Saving...</>
-                                  : <><i className="fas fa-heart me-1 text-danger" /><span className="d-none d-sm-inline">Save for Later</span><span className="d-inline d-sm-none">Save</span></>
-                                }
-                              </button>
-                            )}
-                          </div>
                         </div>
 
-                        {/* Price — right side */}
-                        <div className="text-end" style={{ minWidth: 60, flexShrink: 0, paddingLeft: 6 }}>
-                          <span className="text-danger fw-bold" style={{ fontSize: 14, whiteSpace: 'nowrap', display: 'block' }}>{formatPrice(item.price * item.qty)}</span>
+                        {/* Price — top right, never wraps */}
+                        <div style={{ flexShrink: 0, textAlign: 'right' }}>
+                          <span className="text-danger fw-bold" style={{ fontSize: 14, whiteSpace: 'nowrap' }}>
+                            {formatPrice(item.price * item.qty)}
+                          </span>
                         </div>
+                      </div>
+
+                      {/* ── Row 2: controls (qty + remove + save) ── */}
+                      <div className="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                        {/* Qty stepper */}
+                        <div className="d-flex align-items-center border rounded overflow-hidden">
+                          <button type="button" className="btn btn-sm btn-light border-0"
+                            style={{ width: 40, height: 40, fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            onClick={() => updateQty(item.product, item.qty - 1, item.itemModel)}
+                            aria-label="Decrease quantity">
+                            <i className="fas fa-minus" />
+                          </button>
+                          <span style={{ width: 40, textAlign: 'center', fontWeight: 700, fontSize: 15, lineHeight: '40px' }}>{item.qty}</span>
+                          <button type="button" className="btn btn-sm btn-light border-0"
+                            style={{ width: 40, height: 40, fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            onClick={() => updateQty(item.product, item.qty + 1, item.itemModel)}
+                            aria-label="Increase quantity">
+                            <i className="fas fa-plus" />
+                          </button>
+                        </div>
+
+                        {/* Remove */}
+                        <button type="button" className="btn btn-sm btn-outline-danger"
+                          style={{ minWidth: 40, height: 40 }}
+                          onClick={() => removeFromCart(item.product, item.itemModel)}
+                          aria-label="Remove item">
+                          <i className="fas fa-trash" />
+                        </button>
+
+                        {/* Save for Later */}
+                        {item.itemModel !== 'Accessory' && (
+                          <button type="button" className="btn btn-sm btn-outline-secondary"
+                            style={{ fontSize: 12, height: 40, display: 'flex', alignItems: 'center', gap: 4 }}
+                            disabled={movingToWish[item.product]}
+                            onClick={() => moveToWishlist(item.product, item.itemModel)}>
+                            {movingToWish[item.product]
+                              ? <><span className="spinner-border spinner-border-sm" style={{ width: 10, height: 10 }} /> Saving...</>
+                              : <><i className="fas fa-heart text-danger" /> <span>Save</span></>
+                            }
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
