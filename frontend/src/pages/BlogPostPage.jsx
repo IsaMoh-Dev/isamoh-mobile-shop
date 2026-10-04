@@ -35,7 +35,7 @@ export default function BlogPostPage() {
                 {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </p>
               <h1 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', fontSize: 28, marginBottom: 24 }}>{post.title}</h1>
-              <div style={{ fontFamily: "'Raleway',sans-serif", fontSize: 16, lineHeight: 1.85, color: '#444', whiteSpace: 'pre-wrap' }}>{post.content}</div>
+              <div style={{ fontFamily: "'Raleway',sans-serif", fontSize: 16, lineHeight: 1.85, color: '#444', whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{post.content}</div>
               <hr className="my-4" />
               <Link to="/blog" className="btn btn-outline-primary"><i className="fas fa-arrow-left me-2" />Back to Blog</Link>
             </div>

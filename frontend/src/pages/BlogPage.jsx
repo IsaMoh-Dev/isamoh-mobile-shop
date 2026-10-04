@@ -27,7 +27,7 @@ export default function BlogPage() {
           ) : (
             <div className="row g-4">
               {fillGrid(posts, 3).map(post => (
-                <div key={post._fillerId || post._id} className="col-md-4">
+                <div key={post._fillerId || post._id} className="col-6 col-md-4">
                   <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100" style={{ transition: 'transform 0.2s' }}
                     onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'}
                     onMouseLeave={e=>e.currentTarget.style.transform=''}>

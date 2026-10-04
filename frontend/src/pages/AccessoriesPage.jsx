@@ -46,21 +46,21 @@ export default function AccessoriesPage() {
         <div className="container">
           <h4 className="section-heading"><i className="fas fa-headphones me-2" />Accessories</h4>
 
-          {/* Category tabs */}
-          <div className="d-flex gap-2 flex-wrap mb-4">
-            {CATS.map(c => (
-              <button key={c.value} className={`btn btn-sm ${cat === c.value ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => setCat(c.value)}>
-                <i className={`${c.icon} me-1`} />{c.label}
-              </button>
-            ))}
-            <div className="ms-auto">
-              <select className="form-select form-select-sm" style={{ width: 'auto', fontSize: 12 }} value={sort} onChange={e => setSort(e.target.value)}>
+          {/* Category tabs + sort */}
+          <div className="mb-4">
+            <div className="d-flex gap-2 flex-wrap mb-2">
+              {CATS.map(c => (
+                <button key={c.value} className={`btn btn-sm ${cat === c.value ? 'btn-primary' : 'btn-outline-secondary'}`} onClick={() => setCat(c.value)}>
+                  <i className={`${c.icon} me-1`} />{c.label}
+                </button>
+              ))}
+            </div>
+            <select className="form-select form-select-sm" style={{ maxWidth: 200, fontSize: 12 }} value={sort} onChange={e => setSort(e.target.value)}>
                 <option value="">Sort: Default</option>
                 <option value="price_asc">Price: Low to High</option>
                 <option value="price_desc">Price: High to Low</option>
                 <option value="name_asc">Name: A to Z</option>
               </select>
-            </div>
           </div>
 
           {loading ? (

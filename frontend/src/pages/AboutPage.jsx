@@ -11,16 +11,16 @@ export default function AboutPage() {
   return (
     <Layout>
       {/* Hero */}
-      <section style={{ background: 'linear-gradient(135deg,#003859 0%,#005580 60%,#00A5C4 100%)', color: '#fff', padding: '70px 0 50px' }}>
+      <section style={{ background: 'linear-gradient(135deg,#003859 0%,#005580 60%,#00A5C4 100%)', color: '#fff', padding: 'clamp(40px,8vw,70px) 0 clamp(30px,6vw,50px)' }}>
         <div className="container text-center">
           <div style={{ width: 72, height: 72, background: 'rgba(255,255,255,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 30 }}>
             <i className="fas fa-mobile-alt" />
           </div>
-          <h1 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 800, fontSize: 40, marginBottom: 12 }}>Isa Moh Mobile Shop</h1>
-          <p style={{ fontSize: 18, opacity: 0.85, maxWidth: 600, margin: '0 auto 24px' }}>Your trusted destination for the latest smartphones and accessories in Addis Ababa's Merkato district.</p>
-          <div className="d-flex gap-3 justify-content-center flex-wrap">
-            <Link to="/search" className="btn btn-light px-5 py-2 fw-bold" style={{ color: '#003859', borderRadius: 8, fontSize: 15 }}><i className="fas fa-shopping-bag me-2" />Shop Now</Link>
-            <a href="#contact-section" className="btn btn-outline-light px-5 py-2 fw-bold" style={{ borderRadius: 8, fontSize: 15 }}><i className="fas fa-phone me-2" />Contact Us</a>
+          <h1 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 800, fontSize: 'clamp(24px,6vw,40px)', marginBottom: 12 }}>Isa Moh Mobile Shop</h1>
+          <p style={{ fontSize: 'clamp(14px,3vw,18px)', opacity: 0.85, maxWidth: 600, margin: '0 auto 24px' }}>Your trusted destination for the latest smartphones and accessories in Addis Ababa's Merkato district.</p>
+          <div className="d-flex gap-2 justify-content-center flex-wrap">
+            <Link to="/search" className="btn btn-light fw-bold" style={{ color: '#003859', borderRadius: 8, fontSize: 14, padding: '10px 24px' }}><i className="fas fa-shopping-bag me-2" />Shop Now</Link>
+            <a href="#contact-section" className="btn btn-outline-light fw-bold" style={{ borderRadius: 8, fontSize: 14, padding: '10px 24px' }}><i className="fas fa-phone me-2" />Contact Us</a>
           </div>
         </div>
       </section>
@@ -56,7 +56,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="col-lg-6">
-              <div style={{ background: 'linear-gradient(135deg,#003859,#00A5C4)', borderRadius: 20, padding: 40, color: '#fff', textAlign: 'center' }}>
+              <div style={{ background: 'linear-gradient(135deg,#003859,#00A5C4)', borderRadius: 20, padding: 'clamp(20px,5vw,40px)', color: '#fff', textAlign: 'center' }}>
                 <i className="fas fa-map-marker-alt" style={{ fontSize: 48, marginBottom: 20 }} />
                 <h4 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, marginBottom: 12 }}>Visit Us In Person</h4>
                 <p style={{ opacity: 0.9, marginBottom: 8 }}><i className="fas fa-building me-2" />Merkato, Samson Building</p>
@@ -75,7 +75,7 @@ export default function AboutPage() {
           <h2 className="section-heading text-center mb-5">Why Choose Us?</h2>
           <div className="row g-4">
             {features.map(([icon, title, desc]) => (
-              <div key={title} className="col-md-4">
+              <div key={title} className="col-6 col-md-4">
                 <div className="about-feature-card p-4 text-center">
                   <div className="about-feature-icon mb-3"><i className={icon} /></div>
                   <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 8 }}>{title}</h6>

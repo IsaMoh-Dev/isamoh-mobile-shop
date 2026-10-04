@@ -91,7 +91,7 @@ export default function WishlistPage() {
             <div className="row g-3">
               {fillGrid(items, 3).map(p => (
                 // p is a flat populated product object: { _id, name, brand, price, image, stock, onSale, ... }
-                <div key={p._fillerId || p._id} className="col-12 col-sm-6 col-lg-4">
+                <div key={p._fillerId || p._id} className="col-6 col-sm-6 col-lg-4">
                   <div className="bg-white rounded-3 shadow-sm h-100 overflow-hidden" style={{ border: '1px solid #eee' }}>
 
                     {/* Product image */}
@@ -113,7 +113,7 @@ export default function WishlistPage() {
                         className="btn btn-sm btn-light"
                         style={{
                           position: 'absolute', top: 8, right: 8, borderRadius: '50%',
-                          width: 32, height: 32, padding: 0,
+                          width: 40, height: 40, padding: 0,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
                         }}

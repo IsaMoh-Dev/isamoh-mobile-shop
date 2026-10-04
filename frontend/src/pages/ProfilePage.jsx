@@ -195,9 +195,9 @@ export default function ProfilePage() {
                   <form onSubmit={saveSettings}>
                     <div className="mb-4 pb-4 border-bottom">
                       <h6 className="fw-bold mb-3" style={{ fontSize: 14 }}><i className="fas fa-exchange-alt me-2 text-primary" />Currency Preference</h6>
-                      <div className="d-flex gap-3">
+                      <div className="d-flex gap-3 flex-wrap">
                         {['USD','ETB'].map(cur => (
-                          <label key={cur} className="d-flex align-items-center gap-2 p-3 rounded-2 border" style={{ cursor: 'pointer', minWidth: 130, borderColor: currency === cur ? '#00A5C4' : '#dee2e6', background: currency === cur ? '#f0fbff' : '#fff' }}>
+                          <label key={cur} className="d-flex align-items-center gap-2 p-3 rounded-2 border" style={{ cursor: 'pointer', minWidth: 120, flex: '1 1 120px', borderColor: currency === cur ? '#00A5C4' : '#dee2e6', background: currency === cur ? '#f0fbff' : '#fff' }}>
                             <input type="radio" name="currency" value={cur} defaultChecked={currency === cur} style={{ accentColor: '#00A5C4' }} />
                             <div><div className="fw-bold" style={{ fontSize: 14 }}>{cur}</div><div className="text-muted" style={{ fontSize: 11 }}>{cur === 'USD' ? 'US Dollar' : 'Ethiopian Birr'}</div></div>
                           </label>

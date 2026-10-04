@@ -134,15 +134,15 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Footer */}
-                    <div style={{ background: '#f8f9fa', padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, borderTop: '1px solid #eee' }}>
-                      <div style={{ fontSize: 12, color: '#888' }}>
+                    <div style={{ background: '#f8f9fa', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8, borderTop: '1px solid #eee' }}>
+                      <div style={{ fontSize: 12, color: '#888', wordBreak: 'break-word' }}>
                         <i className="fas fa-map-marker-alt me-1" />{order.address}, {order.city} · <i className="fas fa-credit-card me-1" />{order.paymentMethod.toUpperCase()}
                       </div>
-                      <div className="d-flex align-items-center gap-3 flex-wrap">
-                        <div style={{ fontSize: 14, fontWeight: 700 }}>Total: <span className="text-danger">{formatPrice(order.totalAmount)}</span></div>
-                        <button type="button" className="btn btn-sm btn-outline-secondary" style={{ fontSize: 12, borderRadius: 20 }} onClick={() => printInvoice(order)}><i className="fas fa-print me-1" />Invoice</button>
+                      <div className="d-flex align-items-center gap-2 flex-wrap">
+                        <div style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>Total: <span className="text-danger">{formatPrice(order.totalAmount)}</span></div>
+                        <button type="button" className="btn btn-sm btn-outline-secondary" style={{ fontSize: 12, borderRadius: 20, minHeight: 36 }} onClick={() => printInvoice(order)}><i className="fas fa-print me-1" />Invoice</button>
                         {['pending','processing'].includes(order.status) && (
-                          <button type="button" className="btn btn-sm btn-outline-danger" style={{ fontSize: 12, borderRadius: 20 }} onClick={() => cancelOrder(order._id)}><i className="fas fa-times me-1" />Cancel</button>
+                          <button type="button" className="btn btn-sm btn-outline-danger" style={{ fontSize: 12, borderRadius: 20, minHeight: 36 }} onClick={() => cancelOrder(order._id)}><i className="fas fa-times me-1" />Cancel</button>
                         )}
                       </div>
                     </div>

@@ -84,7 +84,7 @@ export default function SearchPage() {
         </div>
 
         {/* Mobile offcanvas */}
-        <div className="offcanvas offcanvas-start d-md-none" tabIndex="-1" id="filterOffcanvas" style={{ width: 280 }}>
+        <div className="offcanvas offcanvas-start d-md-none" tabIndex="-1" id="filterOffcanvas" style={{ width: 'min(280px, 90vw)' }}>
           <div className="offcanvas-header" style={{ background: 'var(--primary)', color: '#fff' }}>
             <h6 className="offcanvas-title mb-0"><i className="fas fa-filter me-2" />Filter</h6>
             <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" />
@@ -122,17 +122,17 @@ export default function SearchPage() {
 
               {/* Price filter */}
               <form className="bg-white rounded-3 shadow-sm p-3 mb-3 d-flex align-items-end gap-2 flex-wrap" onSubmit={applyPrice}>
-                <div>
+                <div style={{ flex: '1 1 90px', minWidth: 80 }}>
                   <label style={{ fontSize: 11, fontWeight: 600, color: '#888', display: 'block', marginBottom: 3 }}>MIN ({curLabel})</label>
-                  <input type="number" className="form-control form-control-sm" style={{ width: 100 }} placeholder="0" value={minInput} onChange={e => setMinInput(e.target.value)} min="0" />
+                  <input type="number" className="form-control form-control-sm" placeholder="0" value={minInput} onChange={e => setMinInput(e.target.value)} min="0" />
                 </div>
-                <div>
+                <div style={{ flex: '1 1 90px', minWidth: 80 }}>
                   <label style={{ fontSize: 11, fontWeight: 600, color: '#888', display: 'block', marginBottom: 3 }}>MAX ({curLabel})</label>
-                  <input type="number" className="form-control form-control-sm" style={{ width: 100 }} placeholder="Any" value={maxInput} onChange={e => setMaxInput(e.target.value)} min="0" />
+                  <input type="number" className="form-control form-control-sm" placeholder="Any" value={maxInput} onChange={e => setMaxInput(e.target.value)} min="0" />
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm px-3">Apply</button>
+                <button type="submit" className="btn btn-primary btn-sm px-3" style={{ height: 31 }}>Apply</button>
                 {(minPrice || maxPrice) && (
-                  <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => { setMinInput(''); setMaxInput(''); nav({ minPrice: null, maxPrice: null, page: null }); }}>Clear</button>
+                  <button type="button" className="btn btn-outline-secondary btn-sm" style={{ height: 31 }} onClick={() => { setMinInput(''); setMaxInput(''); nav({ minPrice: null, maxPrice: null, page: null }); }}>Clear</button>
                 )}
               </form>
 
