@@ -1,9 +1,9 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Component } from 'react';
 
-// Per-page error boundary — catches crashes in individual admin pages
-// without killing the entire admin layout
+// Per-page error boundary
 class PageErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
   static getDerivedStateFromError(e) { return { hasError: true, error: e }; }
@@ -17,10 +17,8 @@ class PageErrorBoundary extends Component {
         <p style={{ color: '#666', fontSize: 14, marginBottom: 20 }}>
           {this.state.error?.message || 'An unexpected error occurred.'}
         </p>
-        <button
-          className="btn btn-primary"
-          onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
-        >
+        <button className="btn btn-primary"
+          onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}>
           Reload Page
         </button>
       </div>
@@ -43,9 +41,13 @@ const LINKS = [
 
 export default function AdminLayout() {
   const { user, logout, loading } = useAuth();
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const [sideOpen, setSideOpen] = useState(false);
 
-  // Show a friendly spinner while auth is resolving (avoids crash on cold start)
+  // Close sidebar on route change (mobile)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   if (loading) {
     return (
       <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background:'#f4f6f9', gap:16 }}>
@@ -57,27 +59,55 @@ export default function AdminLayout() {
     );
   }
 
-  return (
-    <div style={{ display: 'flex' }}>
-      {/* Sidebar */}
-      <div className="admin-sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
-        <div className="admin-logo"><i className="fas fa-mobile-alt me-2" />Isa Moh Admin</div>
+  const handleNavClick = () => setSideOpen(false); // close on mobile after nav
 
-        <nav className="mt-2" style={{ flex: 1, overflowY: 'auto' }}>
+  return (
+    <div className="admin-shell">
+
+      {/* ── Mobile overlay backdrop ── */}
+      {sideOpen && (
+        <div
+          onClick={() => setSideOpen(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1999,
+            display: 'none', // shown via CSS media query
+          }}
+          className="admin-backdrop"
+        />
+      )}
+
+      {/* ── Sidebar ── */}
+      <aside className={`admin-sidebar${sideOpen ? ' open' : ''}`}>
+        <div className="admin-logo">
+          <i className="fas fa-mobile-alt me-2" />Isa Moh Admin
+          {/* Close button — visible on mobile */}
+          <button
+            type="button"
+            onClick={() => setSideOpen(false)}
+            className="admin-sidebar-close"
+            aria-label="Close menu"
+          >
+            <i className="fas fa-times" />
+          </button>
+        </div>
+
+        <nav style={{ flex: 1, overflowY: 'auto' }}>
           {LINKS.map(([to, icon, label, exact]) => (
             <NavLink key={to} to={to} end={exact}
+              onClick={handleNavClick}
               className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-              <i className={`${icon}`} /> {label}
+              <i className={icon} /> {label}
             </NavLink>
           ))}
         </nav>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8 }}>
-          <a className="nav-link" href="/" target="_blank">
+          <a className="nav-link" href="/" target="_blank" rel="noreferrer" onClick={handleNavClick}>
             <i className="fas fa-external-link-alt" /> View Site
           </a>
-          <button
-            type="button"
+          <button type="button"
             className="nav-link border-0 bg-transparent w-100 text-start"
             style={{ color: '#ff6b6b' }}
             onClick={async () => { await logout(); navigate('/'); }}
@@ -88,10 +118,25 @@ export default function AdminLayout() {
             Logged in as <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{user?.firstName}</strong>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Content */}
-      <div className="admin-content" style={{ flex: 1 }}>
+      {/* ── Main content ── */}
+      <div className="admin-content">
+
+        {/* Mobile topbar with hamburger */}
+        <div className="admin-mobile-bar d-lg-none">
+          <button type="button" className="admin-hamburger" onClick={() => setSideOpen(true)}>
+            <i className="fas fa-bars" />
+          </button>
+          <span style={{ fontFamily:"'Rubik',sans-serif", fontWeight:700, fontSize:16, color: 'var(--text-body)' }}>
+            Isa Moh Admin
+          </span>
+          <a href="/" target="_blank" rel="noreferrer"
+            style={{ fontSize:13, color:'var(--secondary)' }}>
+            <i className="fas fa-external-link-alt" />
+          </a>
+        </div>
+
         <PageErrorBoundary>
           <Outlet />
         </PageErrorBoundary>
