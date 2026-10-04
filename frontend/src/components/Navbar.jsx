@@ -27,6 +27,20 @@ export default function Navbar() {
   // Mobile menu state
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [openDrop,    setOpenDrop]    = useState(''); // 'brands' | 'products' | 'accessories' | 'more' | ''
+  const [langOpen,    setLangOpen]    = useState(false); // language dropdown
+  const [userDdOpen,  setUserDdOpen]  = useState(false); // user dropdown in top bar
+
+  // Close lang dropdown when clicking outside
+  const langRef = useRef(null);
+  const userDdRef = useRef(null);
+  useEffect(() => {
+    const handler = e => {
+      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false);
+      if (userDdRef.current && !userDdRef.current.contains(e.target)) setUserDdOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const searchRef    = useRef(null);
   const mobileSearch = useRef(null);
@@ -111,27 +125,30 @@ export default function Navbar() {
                 <i className="fas fa-heart me-1" />{t('topbar.wishlist')}
               </Link>
               {isLoggedIn ? (
-                <div className="dropdown">
-                  <button type="button" className="top-bar-link border-0 bg-transparent dropdown-toggle"
-                    data-bs-toggle="dropdown" aria-expanded="false">
+                <div className="dropdown" ref={userDdRef}>
+                  <button type="button" className="top-bar-link border-0 bg-transparent"
+                    onClick={() => setUserDdOpen(o => !o)}>
                     <i className="fas fa-user-circle me-1" />
                     <span className="d-none d-sm-inline">{t('topbar.hi')} </span>
                     <strong>{user.firstName}</strong>
+                    <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end shadow border-0">
-                    {canAccessAdmin && (<>
-                      <li><Link className="dropdown-item" to="/admin">
-                        <i className="fas fa-tachometer-alt me-2 text-primary" />
-                        {isSeller ? t('user.sellerPanel') : t('user.adminPanel')}
-                      </Link></li>
+                  {userDdOpen && (
+                    <ul className="dropdown-menu dropdown-menu-end shadow border-0 show">
+                      {canAccessAdmin && (<>
+                        <li><Link className="dropdown-item" to="/admin" onClick={() => setUserDdOpen(false)}>
+                          <i className="fas fa-tachometer-alt me-2 text-primary" />
+                          {isSeller ? t('user.sellerPanel') : t('user.adminPanel')}
+                        </Link></li>
+                        <li><hr className="dropdown-divider" /></li>
+                      </>)}
+                      <li><Link className="dropdown-item" to="/orders" onClick={() => setUserDdOpen(false)}><i className="fas fa-box me-2 text-success" />{t('user.myOrders')}</Link></li>
+                      <li><Link className="dropdown-item" to="/profile" onClick={() => setUserDdOpen(false)}><i className="fas fa-user-edit me-2 text-primary" />{t('user.myProfile')}</Link></li>
+                      <li><Link className="dropdown-item" to="/wishlist" onClick={() => setUserDdOpen(false)}><i className="fas fa-heart me-2 text-danger" />{t('user.wishlist')}</Link></li>
                       <li><hr className="dropdown-divider" /></li>
-                    </>)}
-                    <li><Link className="dropdown-item" to="/orders"><i className="fas fa-box me-2 text-success" />{t('user.myOrders')}</Link></li>
-                    <li><Link className="dropdown-item" to="/profile"><i className="fas fa-user-edit me-2 text-primary" />{t('user.myProfile')}</Link></li>
-                    <li><Link className="dropdown-item" to="/wishlist"><i className="fas fa-heart me-2 text-danger" />{t('user.wishlist')}</Link></li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><button type="button" className="dropdown-item text-danger" onClick={logout}><i className="fas fa-sign-out-alt me-2" />{t('user.logout')}</button></li>
-                  </ul>
+                      <li><button type="button" className="dropdown-item text-danger" onClick={() => { logout(); setUserDdOpen(false); }}><i className="fas fa-sign-out-alt me-2" />{t('user.logout')}</button></li>
+                    </ul>
+                  )}
                 </div>
               ) : (
                 <button type="button" className="top-bar-link border-0 bg-transparent" onClick={() => setShowAuth(true)}>
@@ -326,18 +343,23 @@ export default function Navbar() {
               <button type="button" className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
-              <div className="dropdown">
-                <button type="button" className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
-                  {lang === 'en' ? 'EN' : 'አማ'}
+              <div className="dropdown" ref={langRef} style={{ position: 'relative' }}>
+                <button type="button" className="nav-lang-btn"
+                  onClick={() => setLangOpen(o => !o)}>
+                  {lang === 'en' ? 'EN' : 'አማ'} <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
                 </button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end" style={{ minWidth: 140 }}>
-                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
-                    {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
-                  </button></li>
-                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
-                    {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
-                  </button></li>
-                </ul>
+                {langOpen && (
+                  <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end show" style={{ minWidth: 140 }}>
+                    <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`}
+                      onClick={() => { setLang('en'); setLangOpen(false); }}>
+                      {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
+                    </button></li>
+                    <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`}
+                      onClick={() => { setLang('am'); setLangOpen(false); }}>
+                      {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
+                    </button></li>
+                  </ul>
+                )}
               </div>
               <Link to="/cart" className="nav-cart-btn" aria-label="Cart">
                 <i className="fas fa-shopping-cart" />
@@ -351,18 +373,23 @@ export default function Navbar() {
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
               <span className="theme-label">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
-              <div className="ms-auto dropdown">
-                <button type="button" className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
-                  {lang === 'en' ? 'EN' : 'አማ'}
+              <div className="ms-auto" style={{ position: 'relative' }} ref={langRef}>
+                <button type="button" className="nav-lang-btn"
+                  onClick={() => setLangOpen(o => !o)}>
+                  {lang === 'en' ? 'EN' : 'አማ'} <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
                 </button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end" style={{ minWidth: 140 }}>
-                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
-                    {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
-                  </button></li>
-                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
-                    {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
-                  </button></li>
-                </ul>
+                {langOpen && (
+                  <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end show" style={{ minWidth: 140, bottom: '100%', top: 'auto', marginBottom: 4 }}>
+                    <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`}
+                      onClick={() => { setLang('en'); setLangOpen(false); }}>
+                      {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
+                    </button></li>
+                    <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`}
+                      onClick={() => { setLang('am'); setLangOpen(false); }}>
+                      {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
+                    </button></li>
+                  </ul>
+                )}
               </div>
             </div>
 
