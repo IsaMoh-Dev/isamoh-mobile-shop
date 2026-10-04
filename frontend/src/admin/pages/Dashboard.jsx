@@ -1,16 +1,17 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, LineElement, LineController, BarController, PointElement, Tooltip, Legend } from 'chart.js';
 import { useAuth }     from '../../context/AuthContext';
 import { useCurrency } from '../../context/CurrencyContext';
 import { imgUrl }      from '../../utils/imageUrl';
 import api from '../../api/axios';
 
 // Lazy-load chart components — prevents canvas crash on mobile
-const Bar     = lazy(() => import('react-chartjs-2').then(m => ({ default: m.Bar })));
+const Chart    = lazy(() => import('react-chartjs-2').then(m => ({ default: m.Chart })));
 const Doughnut = lazy(() => import('react-chartjs-2').then(m => ({ default: m.Doughnut })));
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, PointElement, Tooltip, Legend);
+// Register ALL controllers — LineController is required for mixed bar+line charts
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, LineElement, LineController, BarController, PointElement, Tooltip, Legend);
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -85,7 +86,7 @@ export default function Dashboard() {
             </div>
             {stats && (
               <Suspense fallback={<div className="text-center py-3"><div className="spinner-border spinner-border-sm text-primary" /></div>}>
-                <Bar data={revenueChart} options={{ responsive:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v}},y2:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{stepSize:1}}}}} />
+                <Chart type="bar" data={revenueChart} options={{ responsive:true, interaction:{mode:'index',intersect:false}, plugins:{legend:{position:'top'}}, scales:{y:{beginAtZero:true,ticks:{callback:v=>'$'+v}},y2:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false},ticks:{stepSize:1}}}}} />
               </Suspense>
             )}
           </div>
