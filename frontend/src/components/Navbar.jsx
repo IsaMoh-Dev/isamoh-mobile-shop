@@ -125,7 +125,7 @@ export default function Navbar() {
                 <i className="fas fa-heart me-1" />{t('topbar.wishlist')}
               </Link>
               {isLoggedIn ? (
-                <div className="dropdown" ref={userDdRef}>
+                <div className="dropdown" ref={userDdRef} style={{ position: 'relative' }}>
                   <button type="button" className="top-bar-link border-0 bg-transparent"
                     onClick={() => setUserDdOpen(o => !o)}>
                     <i className="fas fa-user-circle me-1" />
@@ -134,7 +134,8 @@ export default function Navbar() {
                     <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
                   </button>
                   {userDdOpen && (
-                    <ul className="dropdown-menu dropdown-menu-end shadow border-0 show">
+                    <ul className="dropdown-menu dropdown-menu-end shadow border-0 show"
+                      style={{ position: 'absolute', top: '100%', right: 0, zIndex: 9999, minWidth: 200 }}>
                       {canAccessAdmin && (<>
                         <li><Link className="dropdown-item" to="/admin" onClick={() => setUserDdOpen(false)}>
                           <i className="fas fa-tachometer-alt me-2 text-primary" />
