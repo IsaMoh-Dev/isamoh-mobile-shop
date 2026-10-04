@@ -401,20 +401,27 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   }
 }
 @media (max-width: 991px) {
-  /* Force the collapse to be a full-width block that pushes content down */
-  #main-nav { flex-wrap: wrap; }
+  /* Navbar wrapper — relative so the absolute menu positions against it */
+  #main-nav { flex-wrap: wrap; position: relative; }
+
+  /* Mobile menu — absolute overlay, floats OVER the page content */
   #main-nav .navbar-collapse {
+    display: none;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100%;
     background: var(--primary);
     border-top: 1px solid rgba(255,255,255,0.1);
     padding: 4px 0 16px;
-    width: 100%;
-    flex-basis: 100%;
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    z-index: 1050;
+    max-height: 80vh;
+    overflow-y: auto;
   }
+  /* Show when .show is added via React state */
+  #main-nav .navbar-collapse.show { display: block; }
   [data-theme="dark"] #main-nav .navbar-collapse { background: #0d0d1a; }
 
   /* Nav items — full-width tap targets */
@@ -437,7 +444,7 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   #main-nav .navbar-collapse .dropdown-toggle::after {
     border-top-color: rgba(255,255,255,0.7);
   }
-  /* Inline sub-dropdowns — flow under parent, no floating popup */
+  /* Sub-dropdowns — inline under parent item */
   #main-nav .navbar-collapse .dropdown-menu {
     position: static !important;
     float: none;
@@ -447,8 +454,9 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
     margin: 4px 8px 4px 20px;
     padding: 4px 0;
     box-shadow: none;
-    /* Let Bootstrap JS control show/hide — do NOT set display here */
+    display: none;
   }
+  #main-nav .navbar-collapse .dropdown-menu.show { display: block; }
   [data-theme="dark"] #main-nav .navbar-collapse .dropdown-menu { background: rgba(255,255,255,0.05); }
   #main-nav .navbar-collapse .dropdown-menu .dropdown-item {
     color: rgba(255,255,255,0.85);
