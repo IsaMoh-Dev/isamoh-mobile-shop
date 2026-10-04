@@ -61,7 +61,8 @@ router.post('/', protect, adminAccess, upload.single('image'), async (req, res) 
     const acc = await Accessory.create(data);
     res.status(201).json({ success: true, accessory: acc });
   } catch (e) {
-    res.status(500).json({ success: false, message: 'Failed to create accessory.' });
+    console.error('[Accessory create]', e.message);
+    res.status(500).json({ success: false, message: e.message || 'Failed to create accessory.' });
   }
 });
 
@@ -83,7 +84,8 @@ router.put('/:id', protect, adminAccess, upload.single('image'), async (req, res
     if (!acc) return res.status(404).json({ success: false, message: 'Accessory not found.' });
     res.json({ success: true, accessory: acc });
   } catch (e) {
-    res.status(500).json({ success: false, message: 'Failed to update accessory.' });
+    console.error('[Accessory update]', e.message);
+    res.status(500).json({ success: false, message: e.message || 'Failed to update accessory.' });
   }
 });
 

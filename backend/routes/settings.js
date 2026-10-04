@@ -65,8 +65,8 @@ router.post('/banner', protect, adminAccess, upload.single('banner'), async (req
 
     res.json({ success: true, path: imageUrl });
   } catch (e) {
-    console.error('[Banner upload]', e);
-    res.status(500).json({ success: false, message: 'Upload failed: ' + e.message });
+    console.error('[Banner upload]', e.message);
+    res.status(500).json({ success: false, message: e.message || 'Upload failed.' });
   }
 });
 

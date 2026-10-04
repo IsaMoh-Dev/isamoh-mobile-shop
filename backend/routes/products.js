@@ -131,7 +131,6 @@ router.post('/', protect, adminAccess, upload.single('image'), async (req, res) 
   try {
     const data = { ...req.body };
 
-    // Upload image to Cloudinary if provided
     if (req.file) {
       data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/products');
     }
@@ -145,8 +144,8 @@ router.post('/', protect, adminAccess, upload.single('image'), async (req, res) 
     const product = await Product.create(data);
     res.status(201).json({ success: true, product });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to create product.' });
+    console.error('[Product create]', e.message);
+    res.status(500).json({ success: false, message: e.message || 'Failed to create product.' });
   }
 });
 
@@ -156,7 +155,6 @@ router.put('/:id', protect, adminAccess, upload.single('image'), async (req, res
     const data = { ...req.body };
 
     if (req.file) {
-      // Delete old image from Cloudinary if it was stored there
       const existing = await Product.findById(req.params.id);
       if (existing?.image) await deleteFromCloudinary(existing.image);
       data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/products');
@@ -172,8 +170,8 @@ router.put('/:id', protect, adminAccess, upload.single('image'), async (req, res
     if (!product) return res.status(404).json({ success: false, message: 'Product not found.' });
     res.json({ success: true, product });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false, message: 'Failed to update product.' });
+    console.error('[Product update]', e.message);
+    res.status(500).json({ success: false, message: e.message || 'Failed to update product.' });
   }
 });
 
