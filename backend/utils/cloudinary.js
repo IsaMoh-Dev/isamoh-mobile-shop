@@ -1,6 +1,14 @@
 const cloudinary = require('cloudinary').v2;
 
-// Configure once — credentials come from env vars
+// Warn loudly on startup if credentials are missing
+const missingVars = ['CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET']
+  .filter(k => !process.env[k] || process.env[k].startsWith('your_'));
+
+if (missingVars.length > 0) {
+  console.warn(`⚠️  Cloudinary not configured — missing: ${missingVars.join(', ')}`);
+  console.warn('   Image uploads will fail. Add these to your Render environment variables.');
+}
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key:    process.env.CLOUDINARY_API_KEY,
@@ -15,6 +23,10 @@ cloudinary.config({
  * @returns {Promise<string>} secure_url of the uploaded image
  */
 function uploadToCloudinary(buffer, folder = 'isamoh', publicId) {
+  // Guard: fail fast with a clear message if not configured
+  if (!process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUD_NAME.startsWith('your_')) {
+    return Promise.reject(new Error('Cloudinary is not configured. Add CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET to your environment variables on Render.'));
+  }
   return new Promise((resolve, reject) => {
     const opts = {
       folder,
