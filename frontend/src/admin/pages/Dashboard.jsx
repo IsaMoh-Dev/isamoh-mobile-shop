@@ -26,8 +26,7 @@ export default function Dashboard() {
     api.get('/orders/stats').then(r => setStats(r.data)).catch(() => {});
     api.get('/products?limit=1').then(r => setProducts(r.data.total || 0)).catch(() => {});
     api.get('/users?limit=1').then(r => setUsers(r.data.total || 0)).catch(() => {});
-    api.get('/products?maxPrice=0&limit=20').then(() => {}).catch(() => {});
-    api.get('/products?limit=20').then(r => setLowStock((r.data.products || []).filter(p => p.stock <= 5))).catch(() => {});
+    api.get('/products?limit=100').then(r => setLowStock((r.data.products || []).filter(p => p.stock <= 5))).catch(() => {});
     api.get('/settings/messages').then(r => setMsgs((r.data.messages || []).slice(0, 5))).catch(() => {});
   }, []);
 

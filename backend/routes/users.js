@@ -4,6 +4,7 @@ const { body, validationResult } = require('express-validator');
 const User     = require('../models/User');
 const { protect, requireRole } = require('../middleware/auth');
 const upload   = require('../middleware/upload');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 
 // GET /api/users/profile
 router.get('/profile', protect, async (req, res) => {
@@ -60,14 +61,16 @@ router.put('/password', protect, [
   }
 });
 
-// POST /api/users/avatar  — upload profile picture
-router.post('/avatar', protect, (req, res, next) => {
-  req.uploadFolder = 'products'; req.uploadPrefix = 'avatar'; next();
-}, upload.single('avatar'), async (req, res) => {
+// POST /api/users/avatar  — upload profile picture to Cloudinary
+router.post('/avatar', protect, upload.single('avatar'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded.' });
-    const avatarPath = `assets/products/${req.file.filename}`;
-    const user = await User.findByIdAndUpdate(req.user._id, { avatar: avatarPath }, { new: true });
+    // Delete old avatar from Cloudinary if it exists
+    const existing = await User.findById(req.user._id).select('avatar');
+    if (existing?.avatar) await deleteFromCloudinary(existing.avatar);
+    // Upload new avatar
+    const avatarUrl = await uploadToCloudinary(req.file.buffer, 'isamoh/avatars');
+    const user = await User.findByIdAndUpdate(req.user._id, { avatar: avatarUrl }, { new: true });
     res.json({ success: true, message: 'Avatar updated!', avatar: user.avatar });
   } catch (e) {
     res.status(500).json({ success: false, message: 'Upload failed.' });

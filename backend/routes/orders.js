@@ -73,6 +73,12 @@ router.get('/stats', protect, adminAccess, async (req, res) => {
       { $limit: 5 },
     ]);
 
+    // Recent 10 orders for dashboard table
+    const recentOrders = await Order.find()
+      .sort({ orderDate: -1 })
+      .limit(10)
+      .select('fullName totalAmount paymentMethod status orderDate');
+
     res.json({
       success: true,
       totalOrders,
@@ -80,6 +86,7 @@ router.get('/stats', protect, adminAccess, async (req, res) => {
       statusCounts: Object.fromEntries(statusCounts.map(s => [s._id, s.count])),
       sevenDays,
       topProducts,
+      recentOrders,
     });
   } catch (e) {
     console.error(e);

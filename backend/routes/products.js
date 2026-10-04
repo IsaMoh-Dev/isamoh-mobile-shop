@@ -48,8 +48,8 @@ router.get('/', optionalAuth, async (req, res) => {
     if (sort === 'price_desc') sortObj = { price: -1 };
     if (sort === 'name_asc')   sortObj = { name: 1 };
 
-    const skip      = (parseInt(page) - 1) * Math.min(parseInt(limit) || 20, 100);
-    const safeLimit = Math.min(parseInt(limit) || 20, 100);
+    const skip      = (parseInt(page) - 1) * Math.min(parseInt(limit) || 20, 500);
+    const safeLimit = Math.min(parseInt(limit) || 20, 500);
     const total     = await Product.countDocuments(query);
     const products  = await Product.find(query).sort(sortObj).skip(skip).limit(safeLimit);
 

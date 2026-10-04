@@ -27,8 +27,8 @@ export default function AdminBanners() {
       const fd = new FormData();
       fd.append('banner', file);
       fd.append('bannerKey', bannerKey);
-      const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
-      await api.put('/settings', { [bannerKey]: r.data.path });
+      // POST /settings/banner uploads to Cloudinary AND saves to DB in one step
+      await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
       toast.success('Banner updated!');
       refreshSettings();
     } catch { toast.error('Upload failed.'); }
@@ -43,7 +43,6 @@ export default function AdminBanners() {
       fd.append('banner', file);
       fd.append('bannerKey', 'shop_logo');
       const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
-      await api.put('/settings', { shop_logo: r.data.path });
       setLogoPreview(imgUrl(r.data.path));
       toast.success('Logo updated! It\'s now live in the navbar.');
       refreshSettings();

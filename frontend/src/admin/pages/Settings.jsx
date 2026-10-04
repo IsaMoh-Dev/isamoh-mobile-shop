@@ -40,12 +40,12 @@ export default function AdminSettings() {
 
   async function markRead(id) {
     try { await api.put(`/settings/messages/${id}/read`); setMessages(ms=>ms.map(m=>m._id===id?{...m,isRead:true}:m)); }
-    catch {}
+    catch { toast.error('Failed to mark as read.'); }
   }
 
   async function deleteMsg(id) {
     try { await api.delete(`/settings/messages/${id}`); setMessages(ms=>ms.filter(m=>m._id!==id)); toast.success('Deleted.'); }
-    catch {}
+    catch { toast.error('Failed to delete message.'); }
   }
 
   const TABS = [['general','fas fa-cog','General'],['shop','fas fa-store','Shop Info'],['delivery','fas fa-truck','Delivery'],['brands','fas fa-mobile-alt','Brands'],['messages','fas fa-envelope','Messages'],['maintenance','fas fa-tools','Maintenance']];
