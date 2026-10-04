@@ -23,25 +23,46 @@ export default function BlogPage() {
           {loading ? (
             <div className="text-center py-5"><div className="spinner-border text-primary" /></div>
           ) : posts.length === 0 ? (
-            <div className="text-center py-5 bg-white rounded-3 shadow-sm"><p className="text-muted">No blog posts yet.</p></div>
+            <div className="text-center py-5 bg-white rounded-3 shadow-sm">
+              <p className="text-muted">No blog posts yet.</p>
+            </div>
           ) : (
-            <div className="row g-4">
+            <div className="row g-3">
               {fillGrid(posts, 3).map(post => (
-                <div key={post._fillerId || post._id} className="col-6 col-md-4">
-                  <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100" style={{ transition: 'transform 0.2s' }}
-                    onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'}
-                    onMouseLeave={e=>e.currentTarget.style.transform=''}>
-                    <div className="blog-card-img-wrap">
+                <div key={post._fillerId || post._id} className="col-12 col-md-4">
+                  <div
+                    className="bg-white rounded-3 shadow-sm overflow-hidden h-100 d-flex d-md-block"
+                    style={{ transition: 'transform 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = ''}
+                  >
+                    {/* Mobile: side thumbnail */}
+                    <div className="d-md-none flex-shrink-0"
+                      style={{ width: 110, minHeight: 110, overflow: 'hidden' }}>
+                      <img src={imgUrl(post.image)} alt={post.title} loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: 110 }} />
+                    </div>
+
+                    {/* Desktop: full-width top image */}
+                    <div className="blog-card-img-wrap d-none d-md-block">
                       <img src={imgUrl(post.image)} alt={post.title} loading="lazy" />
                     </div>
-                    <div className="p-4">
-                      <p style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>
+
+                    {/* Text */}
+                    <div className="p-3 flex-grow-1">
+                      <p style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>
                         <i className="fas fa-calendar me-1" />
-                        {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <h5 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 10 }}>{post.title}</h5>
-                      <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7, marginBottom: 16 }}>{post.content.slice(0, 120)}...</p>
-                      <Link to={`/blog/${post.slug}`} className="btn btn-primary-custom" style={{ fontSize: 13, padding: '8px 20px' }}>Read More <i className="fas fa-arrow-right ms-1" /></Link>
+                      <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 6, fontSize: 13, lineHeight: 1.4 }}>
+                        {post.title}
+                      </h6>
+                      <p className="d-none d-md-block" style={{ fontSize: 13, color: '#666', lineHeight: 1.7, marginBottom: 14 }}>
+                        {post.content.slice(0, 120)}...
+                      </p>
+                      <Link to={`/blog/${post.slug}`} className="btn btn-primary-custom" style={{ fontSize: 12, padding: '6px 14px' }}>
+                        Read More <i className="fas fa-arrow-right ms-1" />
+                      </Link>
                     </div>
                   </div>
                 </div>

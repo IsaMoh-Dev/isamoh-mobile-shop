@@ -130,23 +130,27 @@ export default function HomePage() {
               <h2 className="section-heading mb-0"><i className="fas fa-newspaper me-2" />Latest Blog</h2>
               <Link to="/blog" className="btn btn-outline-primary btn-sm">All Posts <i className="fas fa-arrow-right ms-1" /></Link>
             </div>
-            <div className="row g-4">
+            <div className="row g-3">
               {fillGrid(blogs, 3).map(post => (
-                <div key={post._fillerId || post._id} className="col-6 col-md-4">
-                  <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100" style={{ transition: 'transform 0.2s' }}
+                <div key={post._fillerId || post._id} className="col-12 col-md-4">
+                  <div className="bg-white rounded-3 shadow-sm overflow-hidden h-100 d-flex d-md-block flex-row" style={{ transition: 'transform 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseLeave={e => e.currentTarget.style.transform = ''}>
-                    <div className="blog-card-img-wrap">
-                      <img src={imgUrl(post.image)} alt={post.title} loading="lazy" />
+                    {/* Image */}
+                    <div className="blog-card-img-wrap flex-shrink-0" style={{ width: '100%', maxWidth: '120px', height: 'auto' }}
+                      onMouseEnter={e => {}} onMouseLeave={e => {}}>
+                      <img src={imgUrl(post.image)} alt={post.title} loading="lazy"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: 110 }} />
                     </div>
-                    <div className="p-3">
-                      <p style={{ fontSize: 11, color: '#888', marginBottom: 6 }}>
+                    {/* Text */}
+                    <div className="p-3 flex-grow-1">
+                      <p style={{ fontSize: 11, color: '#888', marginBottom: 4 }}>
                         <i className="fas fa-calendar me-1" />
                         {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
-                      <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 8 }}>{post.title}</h6>
-                      <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6 }}>{post.content.slice(0, 100)}...</p>
-                      <Link to={`/blog/${post.slug}`} className="btn-primary-custom btn" style={{ fontSize: 12, padding: '6px 16px' }}>Read More</Link>
+                      <h6 style={{ fontFamily: "'Rubik',sans-serif", fontWeight: 700, color: '#003859', marginBottom: 6, fontSize: 13 }}>{post.title}</h6>
+                      <p className="d-none d-md-block" style={{ fontSize: 12, color: '#666', lineHeight: 1.5, marginBottom: 8 }}>{post.content.slice(0, 80)}...</p>
+                      <Link to={`/blog/${post.slug}`} className="btn-primary-custom btn" style={{ fontSize: 11, padding: '5px 12px' }}>Read More</Link>
                     </div>
                   </div>
                 </div>
