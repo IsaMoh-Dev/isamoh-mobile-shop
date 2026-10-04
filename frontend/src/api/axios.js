@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL:        '/api',
-  withCredentials: true, // send httpOnly cookies on every request
+  baseURL:         '/api',
+  withCredentials: true,
+  timeout:         30000, // 30s — prevents infinite hangs on Render cold start
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -11,7 +12,6 @@ api.interceptors.response.use(
   res => res,
   err => {
     if (err.response?.status === 401) {
-      // Token expired or missing — clear local state (AuthContext handles redirect)
       window.dispatchEvent(new CustomEvent('auth:expired'));
     }
     return Promise.reject(err);

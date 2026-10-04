@@ -471,8 +471,7 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   #main-nav .navbar-collapse button.nav-link {
     width: 100%;
     text-align: left;
-  }
-  /* Mobile search input — white text on teal background */
+  }  /* Mobile search input — white text on teal background */
   #main-nav .nav-search-input {
     color: #fff !important;
     background: transparent !important;

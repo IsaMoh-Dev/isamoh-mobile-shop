@@ -15,8 +15,20 @@ const LINKS = [
 ];
 
 export default function AdminLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Show a friendly spinner while auth is resolving (avoids crash on cold start)
+  if (loading) {
+    return (
+      <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background:'#f4f6f9', gap:16 }}>
+        <div className="spinner-border text-primary" style={{ width:48, height:48 }} />
+        <p style={{ color:'#888', fontFamily:"'Rubik',sans-serif", fontSize:14 }}>
+          Starting up… this may take up to 30 seconds on the free plan.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex' }}>
@@ -24,7 +36,6 @@ export default function AdminLayout() {
       <div className="admin-sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
         <div className="admin-logo"><i className="fas fa-mobile-alt me-2" />Isa Moh Admin</div>
 
-        {/* Nav links — scrollable if many items */}
         <nav className="mt-2" style={{ flex: 1, overflowY: 'auto' }}>
           {LINKS.map(([to, icon, label, exact]) => (
             <NavLink key={to} to={to} end={exact}
@@ -34,12 +45,12 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        {/* Bottom section — always visible, never overlaps */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8 }}>
           <a className="nav-link" href="/" target="_blank">
             <i className="fas fa-external-link-alt" /> View Site
           </a>
           <button
+            type="button"
             className="nav-link border-0 bg-transparent w-100 text-start"
             style={{ color: '#ff6b6b' }}
             onClick={async () => { await logout(); navigate('/'); }}

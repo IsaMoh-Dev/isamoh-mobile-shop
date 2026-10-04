@@ -23,11 +23,22 @@ export default function Navbar() {
   const [category,    setCategory]    = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [brands,      setBrands]      = useState([]);
+
+  // Mobile menu state
+  const [menuOpen,    setMenuOpen]    = useState(false);
+  const [openDrop,    setOpenDrop]    = useState(''); // 'brands' | 'products' | 'accessories' | 'more' | ''
+
   const searchRef    = useRef(null);
   const mobileSearch = useRef(null);
   const timerRef     = useRef(null);
   const navigate     = useNavigate();
   const location     = useLocation();
+
+  // Close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+    setOpenDrop('');
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -74,14 +85,14 @@ export default function Navbar() {
     navigate(`/search?${params.toString()}`);
   };
 
+  const toggleDrop = key => setOpenDrop(prev => prev === key ? '' : key);
+
   const logoSrc  = imgUrl(settings.shop_logo || 'assets/logo.svg');
   const isActive = path => location.pathname === path ? 'active' : '';
 
   return (
     <>
-      {/* ════════════════════════════════════════
-          TOP BAR
-          ════════════════════════════════════════ */}
+      {/* ════════ TOP BAR ════════ */}
       <div id="top-bar" className="top-bar">
         <div className="container-fluid px-3 px-lg-4">
           <div className="d-flex justify-content-between align-items-center">
@@ -90,7 +101,7 @@ export default function Navbar() {
               <span className="top-bar-brand-info">{t('topbar.location')}</span>
             </div>
             <div className="d-flex align-items-center gap-2 topbar-controls">
-              <button className="ctrl-pill border-0"
+              <button type="button" className="ctrl-pill border-0"
                 onClick={() => switchCurrency(currency === 'ETB' ? 'USD' : 'ETB')}
                 title="Switch currency">
                 <span className="ctrl-pill-icon"><i className="fas fa-exchange-alt" /></span>
@@ -101,11 +112,12 @@ export default function Navbar() {
               </Link>
               {isLoggedIn ? (
                 <div className="dropdown">
-                  <a href="#" className="top-bar-link dropdown-toggle" data-bs-toggle="dropdown" onClick={e => e.preventDefault()}>
+                  <button type="button" className="top-bar-link border-0 bg-transparent dropdown-toggle"
+                    data-bs-toggle="dropdown" aria-expanded="false">
                     <i className="fas fa-user-circle me-1" />
                     <span className="d-none d-sm-inline">{t('topbar.hi')} </span>
                     <strong>{user.firstName}</strong>
-                  </a>
+                  </button>
                   <ul className="dropdown-menu dropdown-menu-end shadow border-0">
                     {canAccessAdmin && (<>
                       <li><Link className="dropdown-item" to="/admin">
@@ -118,11 +130,11 @@ export default function Navbar() {
                     <li><Link className="dropdown-item" to="/profile"><i className="fas fa-user-edit me-2 text-primary" />{t('user.myProfile')}</Link></li>
                     <li><Link className="dropdown-item" to="/wishlist"><i className="fas fa-heart me-2 text-danger" />{t('user.wishlist')}</Link></li>
                     <li><hr className="dropdown-divider" /></li>
-                    <li><button className="dropdown-item text-danger" onClick={logout}><i className="fas fa-sign-out-alt me-2" />{t('user.logout')}</button></li>
+                    <li><button type="button" className="dropdown-item text-danger" onClick={logout}><i className="fas fa-sign-out-alt me-2" />{t('user.logout')}</button></li>
                   </ul>
                 </div>
               ) : (
-                <button className="top-bar-link border-0 bg-transparent" onClick={() => setShowAuth(true)}>
+                <button type="button" className="top-bar-link border-0 bg-transparent" onClick={() => setShowAuth(true)}>
                   <i className="fas fa-user me-1" />{t('topbar.login')}
                 </button>
               )}
@@ -131,27 +143,25 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ════════════════════════════════════════
-          MAIN NAVBAR
-          ════════════════════════════════════════ */}
+      {/* ════════ MAIN NAVBAR ════════ */}
       <nav id="main-nav" className="navbar navbar-expand-lg sticky-top">
         <div className="container-fluid px-3">
 
-          {/* ── Logo — always visible ── */}
-          <Link className="navbar-brand nav-logo me-3" to="/">
-            <img src={logoSrc} alt="Isa Moh" style={{ height: 42, width: 'auto', display: 'block' }} />
+          {/* Logo */}
+          <Link className="navbar-brand nav-logo flex-shrink-0" to="/" style={{ marginRight: 6 }}>
+            <img src={logoSrc} alt="Isa Moh" style={{ height: 38, width: 'auto', display: 'block' }} />
           </Link>
 
-          {/* ── Mobile: search + cart + hamburger ── */}
-          <div className="d-flex align-items-center gap-2 flex-grow-1 d-lg-none">
-            <form className="flex-grow-1" style={{ position: 'relative', minWidth: 0 }}
+          {/* ── Mobile row: search + cart + hamburger ── */}
+          <div className="d-flex align-items-center gap-1 flex-grow-1 d-lg-none" style={{ minWidth: 0 }}>
+            <form className="flex-grow-1" style={{ position: 'relative', minWidth: 0, flex: '1 1 0' }}
               onSubmit={handleSearch} ref={mobileSearch}>
               <div style={{ borderRadius: 8, border: '2px solid var(--accent)', display: 'flex', overflow: 'hidden', background: 'rgba(255,255,255,0.15)' }}>
                 <input type="text"
                   placeholder={t('nav.searchPlaceholder')}
                   value={query} onChange={e => setQuery(e.target.value)} autoComplete="off"
-                  style={{ flex: 1, border: 'none', outline: 'none', padding: '9px 10px', fontSize: 16, background: 'transparent', color: '#fff', minWidth: 0 }} />
-                <button type="submit" style={{ flexShrink: 0, background: 'var(--accent)', border: 'none', width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, color: 'var(--primary)', cursor: 'pointer' }}>
+                  style={{ flex: 1, border: 'none', outline: 'none', padding: '8px 8px', fontSize: 15, background: 'transparent', color: '#fff', minWidth: 0, width: '100%' }} />
+                <button type="submit" style={{ flexShrink: 0, background: 'var(--accent)', border: 'none', width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, color: 'var(--primary)', cursor: 'pointer' }}>
                   <i className="fas fa-search" />
                 </button>
               </div>
@@ -175,17 +185,19 @@ export default function Navbar() {
               {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
             </Link>
 
-            <button className="navbar-toggler flex-shrink-0" type="button"
-              data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-              aria-controls="mainNavbar" aria-label="Toggle navigation">
+            {/* Hamburger — toggles React state, NOT Bootstrap collapse */}
+            <button type="button" className="navbar-toggler flex-shrink-0"
+              onClick={() => { setMenuOpen(o => !o); setOpenDrop(''); }}
+              aria-label="Toggle navigation">
               <span className="navbar-toggler-icon" />
             </button>
           </div>
 
-          {/* ── Desktop + Mobile collapsed menu ── */}
-          <div className="collapse navbar-collapse" id="mainNavbar">
+          {/* ── Desktop collapse / Mobile drawer ── */}
+          {/* On desktop: always visible via CSS. On mobile: shown when menuOpen=true */}
+          <div className={`navbar-collapse${menuOpen ? ' show' : ''}`} id="mainNavbar">
 
-            {/* Desktop search — inside collapse so it shares the flex row */}
+            {/* Desktop search */}
             <form className="nav-search d-none d-lg-flex me-3" onSubmit={handleSearch} ref={searchRef}>
               <div className="nav-search-inner">
                 <select className="nav-search-cat" value={category} onChange={e => setCategory(e.target.value)}>
@@ -218,14 +230,22 @@ export default function Navbar() {
               )}
             </form>
 
-            {/* Nav links */}
+            {/* Nav links — Bootstrap dropdowns on desktop, React state on mobile */}
             <ul className="navbar-nav align-items-lg-center me-auto">
+
               <li className="nav-item">
                 <Link className={`nav-link ${isActive('/')}`} to="/">{t('nav.home')}</Link>
               </li>
-              <li className="nav-item dropdown">
-                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.brands')}</button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0">
+
+              {/* Brands */}
+              <li className={`nav-item dropdown${openDrop === 'brands' ? ' show' : ''}`}>
+                <button type="button"
+                  className="nav-link dropdown-toggle border-0 bg-transparent w-100 text-start"
+                  onClick={() => toggleDrop('brands')}
+                  data-bs-toggle="dropdown" aria-expanded={openDrop === 'brands'}>
+                  {t('nav.brands')}
+                </button>
+                <ul className={`dropdown-menu nav-dropdown shadow border-0${openDrop === 'brands' ? ' show' : ''}`}>
                   {brands.map(b => (
                     <li key={b._id}>
                       <Link className="dropdown-item" to={`/search?category=${encodeURIComponent(b.name)}`}>
@@ -237,22 +257,38 @@ export default function Navbar() {
                   <li><Link className="dropdown-item" to="/search"><i className="fas fa-th me-2 text-secondary" />{t('nav.allBrands')}</Link></li>
                 </ul>
               </li>
-              <li className="nav-item dropdown">
-                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.products')}</button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0">
+
+              {/* Products */}
+              <li className={`nav-item dropdown${openDrop === 'products' ? ' show' : ''}`}>
+                <button type="button"
+                  className="nav-link dropdown-toggle border-0 bg-transparent w-100 text-start"
+                  onClick={() => toggleDrop('products')}
+                  data-bs-toggle="dropdown" aria-expanded={openDrop === 'products'}>
+                  {t('nav.products')}
+                </button>
+                <ul className={`dropdown-menu nav-dropdown shadow border-0${openDrop === 'products' ? ' show' : ''}`}>
                   <li><Link className="dropdown-item" to="/search"><i className="fas fa-th me-2" />{t('nav.allProducts')}</Link></li>
                   <li><Link className="dropdown-item" to="/search?filter=onsale"><i className="fas fa-tag me-2 text-danger" />{t('nav.onSale')}</Link></li>
                   <li><Link className="dropdown-item" to="/search?filter=featured"><i className="fas fa-star me-2 text-warning" />{t('nav.featured')}</Link></li>
                 </ul>
               </li>
+
+              {/* On Sale */}
               <li className="nav-item">
                 <Link className="nav-link" to="/search?filter=onsale">
                   <span className="badge bg-danger me-1">{t('general.sale')}</span>{t('nav.onSale')}
                 </Link>
               </li>
-              <li className="nav-item dropdown">
-                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.accessories')}</button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0">
+
+              {/* Accessories */}
+              <li className={`nav-item dropdown${openDrop === 'accessories' ? ' show' : ''}`}>
+                <button type="button"
+                  className="nav-link dropdown-toggle border-0 bg-transparent w-100 text-start"
+                  onClick={() => toggleDrop('accessories')}
+                  data-bs-toggle="dropdown" aria-expanded={openDrop === 'accessories'}>
+                  {t('nav.accessories')}
+                </button>
+                <ul className={`dropdown-menu nav-dropdown shadow border-0${openDrop === 'accessories' ? ' show' : ''}`}>
                   <li><Link className="dropdown-item" to="/accessories?cat=Cases"><i className="fas fa-shield-alt me-2 text-primary" />{t('nav.cases')}</Link></li>
                   <li><Link className="dropdown-item" to="/accessories?cat=Chargers"><i className="fas fa-bolt me-2 text-warning" />{t('nav.chargers')}</Link></li>
                   <li><Link className="dropdown-item" to="/accessories?cat=Earphones"><i className="fas fa-headphones me-2 text-info" />{t('nav.earphones')}</Link></li>
@@ -261,34 +297,44 @@ export default function Navbar() {
                   <li><Link className="dropdown-item" to="/accessories"><i className="fas fa-th me-2" />{t('nav.allAccessories')}</Link></li>
                 </ul>
               </li>
+
+              {/* Blog */}
               <li className="nav-item">
                 <Link className={`nav-link ${isActive('/blog')}`} to="/blog">{t('nav.blog')}</Link>
               </li>
-              <li className="nav-item dropdown">
-                <button className="nav-link dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown" aria-expanded="false">{t('nav.more')}</button>
-                <ul className="dropdown-menu nav-dropdown shadow border-0">
+
+              {/* More */}
+              <li className={`nav-item dropdown${openDrop === 'more' ? ' show' : ''}`}>
+                <button type="button"
+                  className="nav-link dropdown-toggle border-0 bg-transparent w-100 text-start"
+                  onClick={() => toggleDrop('more')}
+                  data-bs-toggle="dropdown" aria-expanded={openDrop === 'more'}>
+                  {t('nav.more')}
+                </button>
+                <ul className={`dropdown-menu nav-dropdown shadow border-0${openDrop === 'more' ? ' show' : ''}`}>
                   <li><Link className="dropdown-item" to="/about"><i className="fas fa-store me-2 text-primary" />{t('nav.about')}</Link></li>
                   <li><Link className="dropdown-item" to="/support"><i className="fas fa-headset me-2 text-success" />{t('nav.support')}</Link></li>
                   <li><Link className="dropdown-item" to="/support#faq"><i className="fas fa-question-circle me-2 text-warning" />{t('nav.faq')}</Link></li>
                   <li><Link className="dropdown-item" to="/support#contact"><i className="fas fa-envelope me-2 text-info" />{t('nav.contact')}</Link></li>
                 </ul>
               </li>
+
             </ul>
 
             {/* Desktop: theme + lang + cart */}
             <div className="d-none d-lg-flex align-items-center gap-2">
-              <button className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
+              <button type="button" className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
               <div className="dropdown">
-                <button className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
+                <button type="button" className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
                   {lang === 'en' ? 'EN' : 'አማ'}
                 </button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end" style={{ minWidth: 140 }}>
-                  <li><button className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
+                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
                     {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
                   </button></li>
-                  <li><button className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
+                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
                     {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
                   </button></li>
                 </ul>
@@ -301,19 +347,19 @@ export default function Navbar() {
 
             {/* Mobile: theme + lang at bottom of menu */}
             <div className="mobile-nav-utils d-lg-none">
-              <button className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
+              <button type="button" className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
               <span className="theme-label">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
               <div className="ms-auto dropdown">
-                <button className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
+                <button type="button" className="nav-lang-btn dropdown-toggle" data-bs-toggle="dropdown">
                   {lang === 'en' ? 'EN' : 'አማ'}
                 </button>
                 <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end" style={{ minWidth: 140 }}>
-                  <li><button className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
+                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`} onClick={() => setLang('en')}>
                     {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
                   </button></li>
-                  <li><button className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
+                  <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`} onClick={() => setLang('am')}>
                     {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
                   </button></li>
                 </ul>
