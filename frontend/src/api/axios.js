@@ -3,8 +3,10 @@ import axios from 'axios';
 const api = axios.create({
   baseURL:         '/api',
   withCredentials: true,
-  timeout:         30000, // 30s — prevents infinite hangs on Render cold start
-  headers: { 'Content-Type': 'application/json' },
+  timeout:         30000,
+  // Do NOT set Content-Type here globally — axios sets it automatically:
+  // - 'application/json' for plain objects
+  // - 'multipart/form-data; boundary=...' for FormData (with correct boundary)
 });
 
 // Global response interceptor — handle 401 gracefully
