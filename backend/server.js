@@ -109,6 +109,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ── Cloudinary test upload ────────────────────────────────────────────────────
+app.get('/api/test-cloudinary', async (req, res) => {
+  try {
+    const cloudinary = require('cloudinary').v2;
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key:    process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    const buf = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADklEQVQI12P4z8BQDwADhQGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({ folder: 'isamoh/test' }, (err, r) => err ? reject(err) : resolve(r));
+      stream.end(buf);
+    });
+    res.json({ success: true, url: result.secure_url });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message, http_code: e.http_code });
+  }
+});
+
 // ── Serve React build in production ──────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
   const frontendDist = path.join(__dirname, 'public/client');
