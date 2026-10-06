@@ -31,12 +31,14 @@ function uploadToCloudinary(buffer, folder = 'isamoh', publicId) {
     const opts = {
       folder,
       resource_type: 'image',
-      transformation: [{ quality: 'auto', fetch_format: 'auto' }],
     };
     if (publicId) opts.public_id = publicId;
 
     const stream = cloudinary.uploader.upload_stream(opts, (err, result) => {
-      if (err) return reject(err);
+      if (err) {
+        console.error('[Cloudinary upload error]', err);
+        return reject(err);
+      }
       resolve(result.secure_url);
     });
     stream.end(buffer);

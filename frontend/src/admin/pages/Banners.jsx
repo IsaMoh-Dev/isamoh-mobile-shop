@@ -17,8 +17,9 @@ export default function AdminBanners() {
   const settings        = useSettings();
   const refreshSettings = useRefreshSettings();
   const [uploading, setUploading] = useState('');
-  // local preview for logo so it shows instantly after upload
   const [logoPreview, setLogoPreview] = useState(null);
+  // Local preview map for banners so they show immediately after upload
+  const [localPreviews, setLocalPreviews] = useState({});
 
   async function uploadBanner(bannerKey, file) {
     if (!file) return;
@@ -27,11 +28,14 @@ export default function AdminBanners() {
       const fd = new FormData();
       fd.append('banner', file);
       fd.append('bannerKey', bannerKey);
-      // POST /settings/banner uploads to Cloudinary AND saves to DB in one step
-      await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
+      const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
       toast.success('Banner updated!');
-      refreshSettings();
-    } catch { toast.error('Upload failed.'); }
+      // Show uploaded image immediately without waiting for settings refresh
+      setLocalPreviews(prev => ({ ...prev, [bannerKey]: r.data.path }));
+      setTimeout(() => refreshSettings(), 500);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Upload failed.');
+    }
     finally { setUploading(''); }
   }
 
@@ -43,14 +47,16 @@ export default function AdminBanners() {
       fd.append('banner', file);
       fd.append('bannerKey', 'shop_logo');
       const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
-      setLogoPreview(imgUrl(r.data.path));
-      toast.success('Logo updated! It\'s now live in the navbar.');
-      refreshSettings();
-    } catch { toast.error('Logo upload failed.'); }
+      setLogoPreview(r.data.path); // Use raw Cloudinary URL directly
+      toast.success('Logo updated! Refresh the page to see it in the navbar.');
+      setTimeout(() => refreshSettings(), 500);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Logo upload failed.');
+    }
     finally { setUploading(''); }
   }
 
-  const currentLogo = logoPreview || (settings.shop_logo ? imgUrl(settings.shop_logo) : null);
+  const currentLogo = logoPreview || (settings.shop_logo ? (settings.shop_logo.startsWith('http') ? settings.shop_logo : imgUrl(settings.shop_logo)) : null);
 
   return (
     <>
@@ -119,14 +125,14 @@ export default function AdminBanners() {
       </div>
       <div className="row g-4">
         {BANNER_KEYS.map(({ key, label, size }) => {
-          const current = settings[key];
+          const current = localPreviews[key] || settings[key];
           return (
             <div key={key} className="col-md-6 col-lg-4">
               <div className="bg-white rounded-3 shadow-sm p-4">
                 <h6 style={{ fontFamily:"'Rubik',sans-serif", fontWeight:600, marginBottom:4 }}>{label}</h6>
                 <p style={{ fontSize:12, color:'#888', marginBottom:12 }}>Recommended: {size}</p>
                 {current && (
-                  <img src={imgUrl(current)} alt={label} style={{ width:'100%', height:100, objectFit:'cover', borderRadius:8, marginBottom:12 }} />
+                  <img src={current.startsWith('http') ? current : imgUrl(current)} alt={label} style={{ width:'100%', height:100, objectFit:'cover', borderRadius:8, marginBottom:12 }} />
                 )}
                 <label className="btn btn-outline-primary btn-sm w-100" style={{ cursor:'pointer' }}>
                   {uploading === key
