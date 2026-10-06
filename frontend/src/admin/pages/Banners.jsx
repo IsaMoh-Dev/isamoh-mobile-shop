@@ -28,7 +28,7 @@ export default function AdminBanners() {
       const fd = new FormData();
       fd.append('banner', file);
       fd.append('bannerKey', bannerKey);
-      const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
+      const r = await api.post('/settings/banner', fd);
       toast.success('Banner updated!');
       // Show uploaded image immediately without waiting for settings refresh
       setLocalPreviews(prev => ({ ...prev, [bannerKey]: r.data.path }));
@@ -46,7 +46,7 @@ export default function AdminBanners() {
       const fd = new FormData();
       fd.append('banner', file);
       fd.append('bannerKey', 'shop_logo');
-      const r = await api.post('/settings/banner', fd, { headers:{'Content-Type':'multipart/form-data'} });
+      const r = await api.post('/settings/banner', fd);
       setLogoPreview(r.data.path); // Use raw Cloudinary URL directly
       toast.success('Logo updated! Refresh the page to see it in the navbar.');
       setTimeout(() => refreshSettings(), 500);

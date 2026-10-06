@@ -24,8 +24,8 @@ export default function AdminBlog() {
       const fd = new FormData();
       fd.append('title', form.title); fd.append('content', form.content);
       if (imgFile) fd.append('image', imgFile);
-      if (editing) await api.put(`/blog/${editing}`, fd, { headers:{'Content-Type':'multipart/form-data'} });
-      else         await api.post('/blog', fd, { headers:{'Content-Type':'multipart/form-data'} });
+      if (editing) await api.put(`/blog/${editing}`, fd);
+      else         await api.post('/blog', fd);
       toast.success(editing?'Updated.':'Created.'); setShowForm(false); load();
     } catch (err) { toast.error(err.response?.data?.message||'Failed.'); }
     finally { setSaving(false); }

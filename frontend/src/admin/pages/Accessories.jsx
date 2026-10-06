@@ -28,8 +28,8 @@ export default function AdminAccessories() {
       const fd = new FormData();
       Object.entries(form).forEach(([k,v]) => fd.append(k, v));
       if (imgFile) fd.append('image', imgFile);
-      if (editing) await api.put(`/accessories/${editing}`, fd, { headers:{ 'Content-Type':'multipart/form-data' }});
-      else         await api.post('/accessories', fd, { headers:{ 'Content-Type':'multipart/form-data' }});
+      if (editing) await api.put(`/accessories/${editing}`, fd);
+      else         await api.post('/accessories', fd);
       toast.success(editing ? 'Updated.' : 'Created.');
       setShowForm(false); load();
     } catch (err) { toast.error(err.response?.data?.message || 'Failed.'); }

@@ -31,8 +31,8 @@ export default function AdminProducts() {
       const fd = new FormData();
       Object.entries(form).forEach(([k,v]) => fd.append(k, v));
       if (imgFile) fd.append('image', imgFile);
-      if (editing) await api.put(`/products/${editing}`, fd, { headers:{ 'Content-Type':'multipart/form-data' }});
-      else         await api.post('/products', fd, { headers:{ 'Content-Type':'multipart/form-data' }});
+      if (editing) await api.put(`/products/${editing}`, fd);
+      else         await api.post('/products', fd);
       toast.success(editing ? 'Product updated.' : 'Product created.');
       setShowForm(false); load();
     } catch (err) { toast.error(err.response?.data?.message || 'Failed.'); }
