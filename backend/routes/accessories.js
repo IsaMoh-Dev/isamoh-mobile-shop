@@ -49,6 +49,9 @@ router.get('/:id', async (req, res) => {
 // ADMIN: POST /api/accessories
 router.post('/', protect, adminAccess, upload.single('image'), async (req, res) => {
   try {
+    console.log('[ACC CREATE] req.file:', req.file ? `${req.file.originalname} ${req.file.size}b` : 'NONE');
+    console.log('[ACC CREATE] req.body keys:', Object.keys(req.body));
+    console.log('[ACC CREATE] req.body.image:', req.body.image);
     const data = { ...req.body };
     if (req.file) {
       data.image = await uploadToCloudinary(req.file.buffer, 'isamoh/accessories');
