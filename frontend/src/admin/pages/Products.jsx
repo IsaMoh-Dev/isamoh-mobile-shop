@@ -29,7 +29,9 @@ export default function AdminProducts() {
     e.preventDefault(); setSaving(true);
     try {
       const fd = new FormData();
-      Object.entries(form).forEach(([k,v]) => fd.append(k, v));
+      Object.entries(form).forEach(([k, v]) => {
+        if (v !== null && v !== undefined) fd.append(k, v);
+      });
       if (imgFile) fd.append('image', imgFile);
       if (editing) await api.put(`/products/${editing}`, fd);
       else         await api.post('/products', fd);
