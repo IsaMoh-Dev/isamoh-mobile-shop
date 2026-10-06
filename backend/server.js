@@ -97,7 +97,16 @@ app.use('/api/settings',    require('./routes/settings'));
 
 // ── Health check ─────────────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Isa & Dagi API is running ✓', env: process.env.NODE_ENV });
+  res.json({
+    success: true,
+    message: 'Isa & Dagi API is running ✓',
+    env: process.env.NODE_ENV,
+    cloudinary: {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'MISSING',
+      api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? `SET (${process.env.CLOUDINARY_API_SECRET.length} chars)` : 'MISSING',
+    }
+  });
 });
 
 // ── Serve React build in production ──────────────────────────────────────────
