@@ -15,6 +15,9 @@ const path       = require('path');
 
 const app = express();
 
+// ── Trust Render's proxy (required for rate limiting and IP detection) ────────
+app.set('trust proxy', 1);
+
 // ── Security ──────────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(mongoSanitize()); // prevent NoSQL injection
