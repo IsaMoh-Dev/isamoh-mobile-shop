@@ -19,7 +19,26 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ── Security ──────────────────────────────────────────────────────────────────
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: [
+        "'self'",
+        'data:',
+        'blob:',
+        'https://res.cloudinary.com',
+        'https://cdn.jsdelivr.net',
+        'https://cdnjs.cloudflare.com',
+      ],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com', 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+      connectSrc: ["'self'", 'https://res.cloudinary.com'],
+    },
+  },
+}));
 app.use(mongoSanitize()); // prevent NoSQL injection
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
