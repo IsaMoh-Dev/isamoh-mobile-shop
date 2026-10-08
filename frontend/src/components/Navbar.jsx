@@ -27,7 +27,8 @@ export default function Navbar() {
   // Mobile menu state
   const [menuOpen,    setMenuOpen]    = useState(false);
   const [openDrop,    setOpenDrop]    = useState(''); // 'brands' | 'products' | 'accessories' | 'more' | ''
-  const [langOpen,    setLangOpen]    = useState(false); // language dropdown
+  const [langOpen,       setLangOpen]       = useState(false); // desktop lang dropdown
+  const [mobileLangOpen, setMobileLangOpen] = useState(false); // mobile lang dropdown
   const [userDdOpen,  setUserDdOpen]  = useState(false); // user dropdown in top bar
 
   // Separate refs for desktop lang and mobile lang dropdowns
@@ -38,6 +39,7 @@ export default function Navbar() {
   useEffect(() => {
     const handler = e => {
       if (desktopLangRef.current && !desktopLangRef.current.contains(e.target)) setLangOpen(false);
+      if (mobileLangRef.current && !mobileLangRef.current.contains(e.target)) setMobileLangOpen(false);
       if (userDdRef.current && !userDdRef.current.contains(e.target)) setUserDdOpen(false);
     };
     document.addEventListener('mousedown', handler);
@@ -378,17 +380,17 @@ export default function Navbar() {
               <span className="theme-label">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
               <div className="ms-auto" style={{ position: 'relative' }} ref={mobileLangRef}>
                 <button type="button" className="nav-lang-btn"
-                  onClick={() => setLangOpen(o => !o)}>
+                  onClick={() => setMobileLangOpen(o => !o)}>
                   {lang === 'en' ? 'EN' : 'አማ'} <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
                 </button>
-                {langOpen && (
+                {mobileLangOpen && (
                   <ul className="dropdown-menu nav-dropdown shadow border-0 dropdown-menu-end show" style={{ minWidth: 140, bottom: '100%', top: 'auto', marginBottom: 4 }}>
                     <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='en'?'fw-bold':''}`}
-                      onClick={() => { setLang('en'); setLangOpen(false); }}>
+                      onClick={() => { setLang('en'); setMobileLangOpen(false); }}>
                       {lang==='en' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} English
                     </button></li>
                     <li><button type="button" className={`dropdown-item d-flex align-items-center gap-2 ${lang==='am'?'fw-bold':''}`}
-                      onClick={() => { setLang('am'); setLangOpen(false); }}>
+                      onClick={() => { setLang('am'); setMobileLangOpen(false); }}>
                       {lang==='am' ? <i className="fas fa-check text-secondary" style={{fontSize:11}}/> : <span style={{width:14}}/>} አማርኛ
                     </button></li>
                   </ul>
