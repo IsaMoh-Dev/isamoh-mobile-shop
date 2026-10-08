@@ -1115,7 +1115,24 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
    RESPONSIVE â€” MOBILE  (â‰¤ 767px)
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media (max-width:767px) {
-  /* ── Top bar ── */
+  /* ── Swiper slider arrows — small, transparent, just the arrow icon ── */
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 28px !important;
+    height: 28px !important;
+    background: rgba(0,0,0,0.35) !important;
+    border-radius: 50% !important;
+    top: 35% !important;
+    box-shadow: none !important;
+  }
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 11px !important;
+    color: #fff !important;
+    font-weight: 900;
+  }
+  .swiper-button-prev { left: 2px !important; }
+  .swiper-button-next { right: 2px !important; }
   .top-bar { padding: 5px 0; }
   .top-bar-brand-info { display: none; }
   .top-bar-link { font-size: 11px; }
