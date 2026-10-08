@@ -1100,13 +1100,14 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   /* Swiper arrows — keep inside container at tablet width */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 36px !important;
-    height: 36px !important;
-    background: rgba(0,0,0,0.4);
-    border-radius: 50%;
+    width: 30px !important;
+    height: 30px !important;
+    background: rgba(0,0,0,0.5) !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
   }
   .swiper-button-next::after,
-  .swiper-button-prev::after { font-size: 14px !important; color: #fff; }
+  .swiper-button-prev::after { font-size: 11px !important; color: #fff !important; font-weight: 900; }
   .swiper-button-prev { left: 4px !important; }
   .swiper-button-next { right: 4px !important; }
 }
@@ -1115,24 +1116,7 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
    RESPONSIVE â€” MOBILE  (â‰¤ 767px)
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media (max-width:767px) {
-  /* ── Swiper slider arrows — small, transparent, just the arrow icon ── */
-  .swiper-button-next,
-  .swiper-button-prev {
-    width: 28px !important;
-    height: 28px !important;
-    background: rgba(0,0,0,0.35) !important;
-    border-radius: 50% !important;
-    top: 35% !important;
-    box-shadow: none !important;
-  }
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 11px !important;
-    color: #fff !important;
-    font-weight: 900;
-  }
-  .swiper-button-prev { left: 2px !important; }
-  .swiper-button-next { right: 2px !important; }
+  /* ── Top bar ── */
   .top-bar { padding: 5px 0; }
   .top-bar-brand-info { display: none; }
   .top-bar-link { font-size: 11px; }
@@ -1190,19 +1174,21 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
   /* ── Swiper slider arrows & dots ── */
   .swiper-button-next,
   .swiper-button-prev {
-    width: 32px !important;
-    height: 32px !important;
-    background: rgba(0,0,0,0.45);
-    border-radius: 50%;
-    top: 38% !important;
+    width: 26px !important;
+    height: 26px !important;
+    background: rgba(0,0,0,0.5) !important;
+    border-radius: 50% !important;
+    top: 35% !important;
+    box-shadow: none !important;
   }
   .swiper-button-next::after,
   .swiper-button-prev::after {
-    font-size: 13px !important;
-    color: #fff;
+    font-size: 10px !important;
+    color: #fff !important;
+    font-weight: 900;
   }
-  .swiper-button-prev { left: 4px !important; }
-  .swiper-button-next { right: 4px !important; }
+  .swiper-button-prev { left: 2px !important; }
+  .swiper-button-next { right: 2px !important; }
   .swiper-pagination-bullet { width: 7px !important; height: 7px !important; }
 
   /* ── Section padding ── */
