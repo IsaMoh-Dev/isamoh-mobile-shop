@@ -169,7 +169,7 @@ export default function CartPage() {
                             onClick={() => moveToWishlist(item.product, item.itemModel)}>
                             {movingToWish[item.product]
                               ? <><span className="spinner-border spinner-border-sm" style={{ width: 10, height: 10 }} /> Saving...</>
-                              : <><i className="fas fa-heart text-danger" /> <span>Save</span></>
+                              : <><i className="fas fa-heart me-1 text-danger" /> <span>Save to Wishlist</span></>
                             }
                           </button>
                         )}
