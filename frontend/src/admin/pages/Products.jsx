@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import { imgUrl } from '../../utils/imageUrl';
 
-const EMPTY = { brand:'', name:'', price:'', oldPrice:'', description:'', ram:'', storage:'', display:'', camera:'', battery:'', processor:'', os:'', stock:'10', category:'smartphone', featured:false, onSale:false };
+const EMPTY = { brand:'', name:'', price:'', oldPrice:'', description:'', ram:'', storage:'', display:'', camera:'', battery:'', processor:'', os:'', stock:'10', category:'smartphone', featured:false, onSale:false, image2:'', image3:'' };
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -12,6 +12,8 @@ export default function AdminProducts() {
   const [editing,  setEditing]  = useState(null);
   const [form,     setForm]     = useState(EMPTY);
   const [imgFile,  setImgFile]  = useState(null);
+  const [imgFile2, setImgFile2] = useState(null);
+  const [imgFile3, setImgFile3] = useState(null);
   const [saving,   setSaving]   = useState(false);
   const [search,   setSearch]   = useState('');
 
@@ -21,8 +23,8 @@ export default function AdminProducts() {
   }
   useEffect(load, []);
 
-  function openAdd()     { setForm(EMPTY); setEditing(null); setImgFile(null); setShowForm(true); }
-  function openEdit(p)   { setForm({ brand:p.brand, name:p.name, price:p.price, oldPrice:p.oldPrice||'', description:p.description||'', ram:p.ram||'', storage:p.storage||'', display:p.display||'', camera:p.camera||'', battery:p.battery||'', processor:p.processor||'', os:p.os||'', stock:p.stock, category:p.category||'smartphone', featured:p.featured, onSale:p.onSale }); setEditing(p._id); setImgFile(null); setShowForm(true); }
+  function openAdd()     { setForm(EMPTY); setEditing(null); setImgFile(null); setImgFile2(null); setImgFile3(null); setShowForm(true); }
+  function openEdit(p)   { setForm({ brand:p.brand, name:p.name, price:p.price, oldPrice:p.oldPrice||'', description:p.description||'', ram:p.ram||'', storage:p.storage||'', display:p.display||'', camera:p.camera||'', battery:p.battery||'', processor:p.processor||'', os:p.os||'', stock:p.stock, category:p.category||'smartphone', featured:p.featured, onSale:p.onSale, image2:p.image2||'', image3:p.image3||'' }); setEditing(p._id); setImgFile(null); setImgFile2(null); setImgFile3(null); setShowForm(true); }
   function setF(k,v)     { setForm(f => ({ ...f, [k]: v })); }
 
   async function save(e) {
@@ -32,7 +34,9 @@ export default function AdminProducts() {
       Object.entries(form).forEach(([k, v]) => {
         if (v !== null && v !== undefined) fd.append(k, v);
       });
-      if (imgFile) fd.append('image', imgFile);
+      if (imgFile)  fd.append('image',  imgFile);
+      if (imgFile2) fd.append('image2', imgFile2);
+      if (imgFile3) fd.append('image3', imgFile3);
       if (editing) await api.put(`/products/${editing}`, fd);
       else         await api.post('/products', fd);
       toast.success(editing ? 'Product updated.' : 'Product created.');
@@ -76,7 +80,9 @@ export default function AdminProducts() {
                     <div className="col-md-4"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Price ($) *</label><input type="number" className="form-control" value={form.price} onChange={e=>setF('price',e.target.value)} min="0" step="0.01" required /></div>
                     <div className="col-md-4"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Old Price ($)</label><input type="number" className="form-control" value={form.oldPrice} onChange={e=>setF('oldPrice',e.target.value)} min="0" step="0.01" /></div>
                     <div className="col-md-4"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Stock</label><input type="number" className="form-control" value={form.stock} onChange={e=>setF('stock',e.target.value)} min="0" /></div>
-                    <div className="col-12"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Image</label><input type="file" className="form-control" accept="image/*" onChange={e=>setImgFile(e.target.files[0])} /></div>
+                    <div className="col-12"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Main Image</label><input type="file" className="form-control" accept="image/*" onChange={e=>setImgFile(e.target.files[0])} /></div>
+                    <div className="col-md-6"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Extra Image 2 <span className="text-muted">(optional)</span></label><input type="file" className="form-control" accept="image/*" onChange={e=>setImgFile2(e.target.files[0])} /></div>
+                    <div className="col-md-6"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Extra Image 3 <span className="text-muted">(optional)</span></label><input type="file" className="form-control" accept="image/*" onChange={e=>setImgFile3(e.target.files[0])} /></div>
                     <div className="col-md-6"><label className="form-label fw-semibold" style={{ fontSize:13 }}>RAM</label><input className="form-control" value={form.ram} onChange={e=>setF('ram',e.target.value)} placeholder="e.g. 8GB" /></div>
                     <div className="col-md-6"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Storage</label><input className="form-control" value={form.storage} onChange={e=>setF('storage',e.target.value)} placeholder="e.g. 128GB" /></div>
                     <div className="col-md-6"><label className="form-label fw-semibold" style={{ fontSize:13 }}>Display</label><input className="form-control" value={form.display} onChange={e=>setF('display',e.target.value)} placeholder="e.g. 6.5 inch AMOLED" /></div>

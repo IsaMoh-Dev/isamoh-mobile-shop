@@ -29,16 +29,7 @@ export default function AdminAccessories() {
       Object.entries(form).forEach(([k, v]) => {
         if (v !== null && v !== undefined) fd.append(k, v);
       });
-      if (imgFile) {
-        fd.append('image', imgFile);
-        console.log('[UPLOAD] Appending image:', imgFile.name, imgFile.size, 'bytes', imgFile.type);
-      } else {
-        console.log('[UPLOAD] No image file selected');
-      }
-      // Log all FormData keys
-      for (let [k, v] of fd.entries()) {
-        console.log('[UPLOAD] fd key:', k, typeof v === 'object' ? `File(${v.name})` : v);
-      }
+      if (imgFile) fd.append('image', imgFile);
       if (editing) await api.put(`/accessories/${editing}`, fd);
       else         await api.post('/accessories', fd);
       toast.success(editing ? 'Updated.' : 'Created.');

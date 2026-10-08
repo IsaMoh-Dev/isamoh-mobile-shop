@@ -30,12 +30,14 @@ export default function Navbar() {
   const [langOpen,    setLangOpen]    = useState(false); // language dropdown
   const [userDdOpen,  setUserDdOpen]  = useState(false); // user dropdown in top bar
 
-  // Close lang dropdown when clicking outside
-  const langRef = useRef(null);
+  // Separate refs for desktop lang and mobile lang dropdowns
+  const desktopLangRef = useRef(null);
+  const mobileLangRef  = useRef(null);
   const userDdRef = useRef(null);
+
   useEffect(() => {
     const handler = e => {
-      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false);
+      if (desktopLangRef.current && !desktopLangRef.current.contains(e.target)) setLangOpen(false);
       if (userDdRef.current && !userDdRef.current.contains(e.target)) setUserDdOpen(false);
     };
     document.addEventListener('mousedown', handler);
@@ -344,7 +346,7 @@ export default function Navbar() {
               <button type="button" className="nav-icon-btn" onClick={toggleTheme} aria-label="Toggle theme">
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
-              <div className="dropdown" ref={langRef} style={{ position: 'relative' }}>
+              <div className="dropdown" ref={desktopLangRef} style={{ position: 'relative' }}>
                 <button type="button" className="nav-lang-btn"
                   onClick={() => setLangOpen(o => !o)}>
                   {lang === 'en' ? 'EN' : 'አማ'} <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
@@ -374,7 +376,7 @@ export default function Navbar() {
                 <i className={`fas ${isDark ? 'fa-sun' : 'fa-moon'}`} />
               </button>
               <span className="theme-label">{isDark ? 'Light Mode' : 'Dark Mode'}</span>
-              <div className="ms-auto" style={{ position: 'relative' }} ref={langRef}>
+              <div className="ms-auto" style={{ position: 'relative' }} ref={mobileLangRef}>
                 <button type="button" className="nav-lang-btn"
                   onClick={() => setLangOpen(o => !o)}>
                   {lang === 'en' ? 'EN' : 'አማ'} <i className="fas fa-caret-down ms-1" style={{fontSize:10}} />
