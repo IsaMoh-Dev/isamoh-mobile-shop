@@ -1350,13 +1350,14 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 }
 
 
-/* ── Swiper navigation arrows — clean, balanced, edge-positioned ── */
+
+/* ── Swiper navigation arrows ── */
 .swiper-button-prev,
 .swiper-button-next {
   background: transparent !important;
   box-shadow: none !important;
-  width: 44px !important;
-  height: 44px !important;
+  width: 36px !important;
+  height: 60px !important;
   top: 50% !important;
   transform: translateY(-50%);
   display: flex !important;
@@ -1367,26 +1368,27 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 .swiper-button-next { right: 0 !important; }
 .swiper-button-prev::after,
 .swiper-button-next::after {
-  font-family: serif !important;
-  font-weight: 900 !important;
-  font-size: 36px !important;
+  font-family: sans-serif !important;
+  font-weight: 700 !important;
   line-height: 1 !important;
   color: var(--primary) !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
-.swiper-button-prev::after { content: '\2039' !important; }
-.swiper-button-next::after { content: '\203A' !important; }
+/* Left: « — large on outer edge, small pointing inward */
+.swiper-button-prev::after { content: '\00AB' !important; font-size: 32px !important; }
+/* Right: » — small pointing inward, large on outer edge */
+.swiper-button-next::after { content: '\00BB' !important; font-size: 32px !important; }
+
 [data-theme="dark"] .swiper-button-prev::after,
 [data-theme="dark"] .swiper-button-next::after { color: #fff !important; }
 
-/* Allow arrows to show outside card area */
 #top-sale .swiper,
 #new-phones .swiper { overflow: visible !important; }
 #top-sale,
 #new-phones { overflow: hidden; }
 
-/* Mobile: slightly smaller */
 @media (max-width: 991px) {
   .swiper-button-prev::after,
-  .swiper-button-next::after { font-size: 28px !important; }
+  .swiper-button-next::after { font-size: 24px !important; }
+  .swiper-button-prev, .swiper-button-next { height: 44px !important; }
 }
