@@ -1351,6 +1351,7 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 
 
 
+
 /* ── Swiper navigation arrows ── */
 .swiper-button-prev,
 .swiper-button-next {
@@ -1366,29 +1367,26 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 }
 .swiper-button-prev { left: 0 !important; }
 .swiper-button-next { right: 0 !important; }
+.swiper-button-prev::after { content: '\2039' !important; }
+.swiper-button-next::after { content: '\203A' !important; }
 .swiper-button-prev::after,
 .swiper-button-next::after {
   font-family: sans-serif !important;
   font-weight: 700 !important;
+  font-size: 40px !important;
   line-height: 1 !important;
   color: var(--primary) !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-/* Left: « — large on outer edge, small pointing inward */
-.swiper-button-prev::after { content: '\00AB' !important; font-size: 32px !important; }
-/* Right: » — small pointing inward, large on outer edge */
-.swiper-button-next::after { content: '\00BB' !important; font-size: 32px !important; }
-
 [data-theme="dark"] .swiper-button-prev::after,
 [data-theme="dark"] .swiper-button-next::after { color: #fff !important; }
 
 #top-sale .swiper,
 #new-phones .swiper { overflow: visible !important; }
-#top-sale,
-#new-phones { overflow: hidden; }
+#top-sale, #new-phones { overflow: hidden; }
 
 @media (max-width: 991px) {
   .swiper-button-prev::after,
-  .swiper-button-next::after { font-size: 24px !important; }
+  .swiper-button-next::after { font-size: 30px !important; }
   .swiper-button-prev, .swiper-button-next { height: 44px !important; }
 }
