@@ -1350,32 +1350,34 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 }
 
 
-/* ── Swiper navigation buttons — desktop global styles ── */
-.swiper-button-next,
-.swiper-button-prev {
-  width: 40px !important;
-  height: 40px !important;
-  background: var(--primary) !important;
-  border-radius: 50% !important;
-  top: 38% !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  transition: background 0.2s, transform 0.15s;
+/* ── Swiper navigation arrows — clean, balanced, edge-positioned ── */
+.swiper-button-prev,
+.swiper-button-next {
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 44px !important;
+  height: 44px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  background: var(--secondary) !important;
-  transform: scale(1.1);
+.swiper-button-prev { left: 0 !important; }
+.swiper-button-next { right: 0 !important; }
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-family: serif !important;
+  font-weight: 900 !important;
+  font-size: 36px !important;
+  line-height: 1 !important;
+  color: var(--primary) !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
-.swiper-button-next::after,
-.swiper-button-prev::after {
-  font-size: 14px !important;
-  color: #fff !important;
-  font-weight: 900;
-}
-.swiper-button-prev { left: 6px !important; }
-.swiper-button-next { right: 6px !important; }
-[data-theme="dark"] .swiper-button-next,
-[data-theme="dark"] .swiper-button-prev { background: #004a7c !important; }
+.swiper-button-prev::after { content: '\2039' !important; }
+.swiper-button-next::after { content: '\203A' !important; }
+[data-theme="dark"] .swiper-button-prev::after,
+[data-theme="dark"] .swiper-button-next::after { color: #fff !important; }
 
 /* Allow arrows to show outside card area */
 #top-sale .swiper,
@@ -1383,48 +1385,8 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 #top-sale,
 #new-phones { overflow: hidden; }
 
-/* ── Force hide "prev"/"next" text, show only arrow icon ── */
-.swiper-button-prev::after { content: '‹' !important; font-size: 18px !important; font-family: serif !important; font-weight: 900 !important; color: #fff !important; }
-.swiper-button-next::after { content: '›' !important; font-size: 18px !important; font-family: serif !important; font-weight: 900 !important; color: #fff !important; }
-@media (max-width: 991px) {
-  .swiper-button-prev::after { font-size: 14px !important; }
-  .swiper-button-next::after { font-size: 14px !important; }
-}
-
-/* ── Swiper arrows — final override: transparent, edge-hugging, arrow only ── */
-.swiper-button-prev,
-.swiper-button-next {
-  background: transparent !important;
-  box-shadow: none !important;
-  width: 32px !important;
-  height: 32px !important;
-  top: 50% !important;
-  transform: translateY(-50%);
-}
-.swiper-button-prev { left: 0 !important; }
-.swiper-button-next { right: 0 !important; }
-.swiper-button-prev::after,
-.swiper-button-next::after {
-  font-size: 22px !important;
-  color: var(--primary) !important;
-  font-weight: 900 !important;
-  font-family: serif !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-.swiper-button-prev::after { content: '‹' !important; }
-.swiper-button-next::after { content: '›' !important; }
+/* Mobile: slightly smaller */
 @media (max-width: 991px) {
   .swiper-button-prev::after,
-  .swiper-button-next::after { font-size: 18px !important; color: var(--secondary) !important; }
-}
-
-/* ── Swiper arrows — use chevron arrows, perfectly centered ── */
-.swiper-button-prev::after { content: '❮' !important; }
-.swiper-button-next::after { content: '❯' !important; }
-.swiper-button-prev,
-.swiper-button-next {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 20px !important;
+  .swiper-button-next::after { font-size: 28px !important; }
 }
