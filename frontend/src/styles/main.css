@@ -1352,41 +1352,40 @@ button:focus, button:focus-visible { outline: none !important; box-shadow: none 
 
 
 
-/* ── Swiper navigation arrows ── */
+
+/* Swiper navigation arrows */
 .swiper-button-prev,
 .swiper-button-next {
   background: transparent !important;
   box-shadow: none !important;
-  width: 36px !important;
+  width: 30px !important;
   height: 60px !important;
   top: 50% !important;
   transform: translateY(-50%);
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+  overflow: hidden !important;
 }
 .swiper-button-prev { left: 0 !important; }
 .swiper-button-next { right: 0 !important; }
-.swiper-button-prev::after { content: '\2039' !important; }
-.swiper-button-next::after { content: '\203A' !important; }
 .swiper-button-prev::after,
 .swiper-button-next::after {
-  font-family: sans-serif !important;
+  font-size: 38px !important;
   font-weight: 700 !important;
-  font-size: 40px !important;
+  font-family: Arial, sans-serif !important;
   line-height: 1 !important;
   color: var(--primary) !important;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+  width: auto !important;
+  height: auto !important;
 }
-[data-theme="dark"] .swiper-button-prev::after,
-[data-theme="dark"] .swiper-button-next::after { color: #fff !important; }
-
-#top-sale .swiper,
-#new-phones .swiper { overflow: visible !important; }
+.swiper-button-prev::after { content: '<' !important; }
+.swiper-button-next::after { content: '>' !important; }
+#top-sale .swiper, #new-phones .swiper { overflow: visible !important; }
 #top-sale, #new-phones { overflow: hidden; }
-
 @media (max-width: 991px) {
-  .swiper-button-prev::after,
-  .swiper-button-next::after { font-size: 30px !important; }
-  .swiper-button-prev, .swiper-button-next { height: 44px !important; }
+  .swiper-button-prev::after, .swiper-button-next::after { font-size: 28px !important; }
+  .swiper-button-prev, .swiper-button-next { height: 44px !important; width: 24px !important; }
 }
+
